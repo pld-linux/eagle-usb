@@ -10,12 +10,13 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle-usb
 Version:	1.9.6
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Base/Kernel
 Source0: 	http://dl.sourceforge.net/sourceforge/eagle-usb/%{name}-%{version}.tar.bz2
 # Source0-md5:	d2d94f396132e34417fa1b26bcde7287
 Patch0:		eagle-Makefile.patch
+Patch1:		eagle-usb-ppc.patch
 URL:		http://fast800.tuxfamily.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -68,6 +69,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %prep
 %setup -q 
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__aclocal} -I .
