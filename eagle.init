@@ -2,7 +2,7 @@
 #
 # eagle	starts/stops internet connection provided by adsl usb modem
 #
-# chkconfig:    2345	09 91	
+# chkconfig:    2345	11 89	
 #
 # description:	eagle starts/stops internet connection provided by adsl usb \
 # 		modem based on Analog Devices Inc. USB ADSL Modem chip - \
