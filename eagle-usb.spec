@@ -5,16 +5,16 @@
 %define		_orig_name	fast800
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
-Name:		eagle
+Name:		eagle-utils
 Version:	1.0.4
-%define	_rel	4
+%define	_rel	5
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
+Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/eagle-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
-Patch0:		%{name}-Makefile.patch
-Patch1:		%{name}-firmware.patch
+Patch0:		eagle-Makefile.patch
+Patch1:		eagle-firmware.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
 BuildRequires:	%{kgcc_package}
@@ -65,7 +65,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 800...).
 
 %prep
-%setup -q
+%setup -q -n eagle-%{version}
 %patch0 -p1
 %patch1 -p1
 
@@ -96,12 +96,12 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
 install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp}
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/%{name}}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/eagle}
 
 install kernel-up/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
 install kernel-smp/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
 
-install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/%{name}
+install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 
 %{__make} -C driver/firmware install \
 	CONFIGDIR=$RPM_BUILD_ROOT/etc/analog \
@@ -155,7 +155,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/adiusbadsl.conf
 %{_sysconfdir}/analog/CMV*
 %attr(755,root,root) %{_sysconfdir}/hotplug/usb/*
-%{_libdir}/hotplug/%{name}
+%{_libdir}/hotplug/eagle
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
