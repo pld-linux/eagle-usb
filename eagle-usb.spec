@@ -75,15 +75,23 @@ install -d kernel-{up,smp}
 # UP
 %{__make} clean
 %{__make} -C driver \
-	CC=%{kgcc} \
+	CC=%{__cc} \
+%ifarch %{ix86} 
+	OPT="-I/usr/src/linux/include/asm-i386/mach-default" \
+%endif
 	KERNELSRC="%{_kernelsrcdir}"
 install driver/adiusbadsl.o kernel-up
 
 # SMP
 CONFIG_SMP=y; export CONFIG_SMP
 %{__make} -C driver clean
-%{__make} -e -C driver \
-	CC=%{kgcc} \
+%{__make} -C driver \
+	CC=%{__cc} \
+%ifarch %{ix86} 
+	OPT="-I/usr/src/linux/include/asm-i386/mach-default -DSMP -D__SMP__" \
+%else
+	OPT="-D__SMP__ -DSMP" \
+%endif
 	KERNELSRC="%{_kernelsrcdir}"
 install driver/adiusbadsl.o kernel-smp/
 
