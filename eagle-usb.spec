@@ -23,6 +23,7 @@ Patch1:		%{name}-eu_types.patch
 Patch2:		%{name}-vpivci-info.patch
 Patch3:		%{name}-opt.patch
 URL:		http://gna.org/projects/eagleusb/
+BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
