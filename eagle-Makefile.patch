@@ -65,11 +65,21 @@
 +# ===== arg: eagle-usb-confdir =====
 +AC_ARG_WITH(eagle-usb-bindir,
 +[  --with-eagle-usb-bindir   Path to EAGLE USB configuration files ($DATADIR/eagle-usb) ],
-+EAGLEUSB_CONFDIR=${withval},
-+EAGLEUSB_CONFDIR=${DATADIR}/eagle-usb
++EAGLEUSB_BINDIR=${withval},
++EAGLEUSB_BINDIR=${DATADIR}/eagle-usb
 +)
 +
 +
  # ===== arg: language =====
  AC_ARG_WITH(lang,
  [  --with-lang=LL             Language (en/de/es/fr/it/pl)],
+--- eagle-usb/configure.in~	2003-12-19 23:31:13.000000000 +0100
++++ eagle-usb/configure.in	2003-12-19 23:58:46.000000000 +0100
+@@ -181,6 +181,7 @@
+ AC_SUBST(KERNELVER)
+ AC_SUBST(CONFDIR)
+ AC_SUBST(EAGLEUSB_CONFDIR)
++AC_SUBST(EAGLEUSB_BINDIR)
+ AC_SUBST(EU_LANG)
+ AC_SUBST(DIALOG)
+ AC_SUBST(DHCP)
