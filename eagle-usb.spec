@@ -30,7 +30,7 @@ URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	rpmbuild(macros) >= 1.153
 %endif
 Requires:	ppp >= 2.4.1
-Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}}
+Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}
 Obsoletes:	eagle-utils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
