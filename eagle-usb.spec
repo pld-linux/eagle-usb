@@ -12,13 +12,13 @@
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
-Version:	1.9.9.1
-%define		_rel	5
+Version:	2.0.0
+%define		_rel	1
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
-Source0:	http://download.gna.org/eagleusb/eagle-usb-1.9.9/%{name}-%{version}.tar.bz2
-# Source0-md5:	30c6615c19f92efebf5e3fcd2ec9064e
+Source0:	http://download.gna.org/eagleusb/eagle-usb-%{version}/%{name}-%{version}.tar.bz2
+# Source0-md5:	7dabaddae4acfb2b5d2caebca04a2263
 Patch1:		%{name}-eu_types.patch
 Patch2:		%{name}-vpivci-info.patch
 Patch3:		%{name}-opt.patch
@@ -152,6 +152,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{analog,hotplug,ppp} \
 %{__make} -C driver/firmware install \
 	EU_DSP_DIR=$RPM_BUILD_ROOT%{_datadir}/misc
 %{__make} -C driver/user install \
+	EU_DIR=$RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb \
 	EU_SCRIPT_DIR=$RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb \
 	SBINDIR=$RPM_BUILD_ROOT%{_sbindir}
 mv $RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb/eagle-usb.conf{.template,}
@@ -180,6 +181,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README
 %dir %{_sysconfdir}/eagle-usb
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/eagle-usb.conf
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/*.txt
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
 %endif
