@@ -7,7 +7,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle-utils
 Version:	1.0.4
-%define	_rel	6
+%define	_rel	7
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
@@ -22,7 +22,7 @@ BuildRequires:	rpmbuild(macros) >= 1.118
 Requires(post,postun):	/sbin/depmod
 Requires(post,postun):	/sbin/update-usb.usermap
 Requires:	ppp >= 2.4.1
-Requires:	hotplug
+#Requires:	hotplug
 %{!?_without_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
