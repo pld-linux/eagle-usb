@@ -40,7 +40,7 @@ Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{!?_without_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
-Requires(post,postun):	/sbin/update-usb.usermap
+#Requires(post,postun):	/sbin/update-usb.usermap
 
 %description -n kernel-usb-%{_orig_name}
 Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
@@ -57,7 +57,7 @@ Group:		Base/Kernel
 %{!?_without_dist_kernel:%requires_releq_kernel_smp}
 %{!?_without_dist_kernel:Provides:	kernel-usb-%{_orig_name}}
 Requires(post,postun):	/sbin/depmod
-Requires(post,postun):	/sbin/update-usb.usermap
+#Requires(post,postun):	/sbin/update-usb.usermap
 
 %description -n kernel-smp-usb-%{_orig_name}
 Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
