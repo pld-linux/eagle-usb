@@ -73,6 +73,9 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 
 %configure --with-eagle-usb-bindir=%{_datadir}/misc/
 
+if [ -z "$TMP" ]; then TMP="/tmp"; fi
+if [ -d "$TMP/linux" ]; then rm -rf "$TMP/linux/*" else mkdir "$TMP/linux"; fi
+
 cp -rdp /usr/src/linux-2.6.0 $TMP/linux
 (cd $TMP/linux; make mrproper)
 cp /usr/src/linux/config-up $TMP/linux/.config
