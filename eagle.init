@@ -2,7 +2,7 @@
 #
 # eagle	starts/stops internet connection provided by adsl usb modem
 #
-# chkconfig:    2345	11 89	
+# chkconfig:    2345	09 91	
 #
 # description:	eagle starts/stops internet connection provided by adsl usb \
 # 		modem based on Analog Devices Inc. USB ADSL Modem chip - \
@@ -36,14 +36,12 @@ case "$1" in
   start)
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/eagle ]; then
-		#OTHER_PPP_IFS=`ifconfig | awk '/ppp[0-9]*/ {print $1}'
 	    	# show "Starting %s service" eagle
 		msg_starting eagle
 		/usr/sbin/startadsl
 		RETVAL=$?
 		busy
 		sleep 5 # wait for ip from provider
-		show `grep ifconfig 
 		if [ $RETVAL -eq 0 ]; then
 			touch /var/lock/subsys/eagle
 			ok
