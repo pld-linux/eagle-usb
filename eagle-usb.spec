@@ -3,6 +3,7 @@
 # _without_dist_kernel		without distribution kernel
 #
 %define		_orig_name	fast800
+%define		_update_usb /sbin/update-usb.usermap
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle-utils
@@ -20,11 +21,10 @@ URL:		http://fast800.tuxfamily.org/
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 Requires(post,postun):	/sbin/depmod
-#Requires(post,postun):	/sbin/update-usb.usermap
 Requires:	ppp >= 2.4.1
-#Requires:	hotplug
 %{!?_without_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
 
 %description
 Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
@@ -40,7 +40,6 @@ Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{!?_without_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
-#Requires(post,postun):	/sbin/update-usb.usermap
 
 %description -n kernel-usb-%{_orig_name}
 Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
@@ -57,7 +56,6 @@ Group:		Base/Kernel
 %{!?_without_dist_kernel:%requires_releq_kernel_smp}
 %{!?_without_dist_kernel:Provides:	kernel-usb-%{_orig_name}}
 Requires(post,postun):	/sbin/depmod
-#Requires(post,postun):	/sbin/update-usb.usermap
 
 %description -n kernel-smp-usb-%{_orig_name}
 Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
@@ -137,26 +135,38 @@ n
 rm -rf $RPM_BUILD_ROOT
 
 %post
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %postun
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %post -n kernel-usb-%{_orig_name}
 %depmod %{_kernel_ver}
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %postun -n kernel-usb-%{_orig_name}
 %depmod %{_kernel_ver}
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %post	-n kernel-smp-usb-%{_orig_name}
 %depmod %{_kernel_ver}smp
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %postun -n kernel-smp-usb-%{_orig_name}
 %depmod %{_kernel_ver}smp
-[ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
+if [ -x %{_update_usb} ]; then
+	/sbin/update-usb.usermap
+fi
 
 %files
 %defattr(644,root,root,755)
