@@ -92,7 +92,7 @@ cd driver
 ln -sf %{_kernelsrcdir}/config-up .config
 install -d include/{linux,config}
 ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
-ln -sf %{_kernelsrcdir}/include/linux/autoconf.h include/linux/autoconf.h
+ln -sf %{_kernelsrcdir}/include/linux/autoconf-up.h include/linux/autoconf.h
 touch include/config/MARKER
 %{__make} -C %{_kernelsrcdir} modules \
 	SUBDIRS=$PWD \
@@ -106,7 +106,7 @@ ln -sf %{_kernelsrcdir}/config-smp .config
 rm -rf  include
 install -d include/{linux,config}
 ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
-ln -sf %{_kernelsrcdir}/include/linux/autoconf.h include/linux/autoconf.h
+ln -sf %{_kernelsrcdir}/include/linux/autoconf-smp.h include/linux/autoconf.h
 touch include/config/MARKER
 
 %{__make} -C %{_kernelsrcdir} modules \
