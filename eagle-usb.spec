@@ -31,6 +31,8 @@ BuildRequires:	automake
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.153
 %endif
+BuildRequires:	net-tools
+BuildRequires:	SysVinit
 Requires:	ppp >= 2.4.1
 Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}
 Conflicts:	eagle-usb24
