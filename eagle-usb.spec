@@ -82,10 +82,10 @@ mkdir kern-fixed
 cd kern-fixed
 cp %{_includedir}/linux/usb.h ./
 cp %{_includedir}/linux/usbdevice_fs.h ./
-
 %patch4 -p0 -b .niedakh
-%patch5 -p1
+cd ../
 
+%patch5 -p1
 
 %build
 install -d kernel-{up,smp}
