@@ -64,7 +64,7 @@ Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
 Requires(post,postun):	/sbin/depmod
-Provides:	kernel-usb-eagle
+Provides:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}
 Obsoletes:	kernel-smp-usb-fast800
 
 %description -n kernel-smp-usb-eagle
