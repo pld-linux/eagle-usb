@@ -83,9 +83,16 @@ touch include/config/MARKER
 %{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
 mv eagle-usb.ko eagle-usb.ko-done
 
-ln -sf %{_kernelsrcdir}/config-smp .config
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 mrproper
 
-%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 clean modules
+ln -sf %{_kernelsrcdir}/config-smp .config
+rm -rf  include
+install -d include/{linux,config}
+ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
+ln -sf %{_kernelsrcdir}/include/linux/autoconf.h include/linux/autoconf.h
+touch include/config/MARKER
+
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
 
 %install
 rm -rf $RPM_BUILD_ROOT
