@@ -15,6 +15,8 @@ Source0:	http://ep09.pld-linux.org/~djurban/pld/%{name}-usb-%{_snap}.tar.bz2
 # Source0-md5:	2d15ce31e185042b4971733b8b345a88	
 Patch0:		%{name}-Makefile.patch
 URL:		http://fast800.tuxfamily.org/
+BuildRequires:	autoconf
+BuildRequires:	automake
 %{?with_dist_kernel:BuildRequires: kernel-headers }
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
