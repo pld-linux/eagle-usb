@@ -1,6 +1,7 @@
---- eagle-usb-1.9.6/driver/eu_types.h.orig	2004-02-22 22:11:30.000000000 +0100
-+++ eagle-usb-1.9.6/driver/eu_types.h	2004-05-31 01:31:02.547799648 +0200
-@@ -155,13 +155,13 @@
+diff -urN eagle-usb-2.0.0.org/driver/eu_types.h eagle-usb-2.0.0/driver/eu_types.h
+--- eagle-usb-2.0.0.org/driver/eu_types.h	2004-11-07 10:06:55.000000000 +0100
++++ eagle-usb-2.0.0/driver/eu_types.h	2004-11-25 22:58:46.196401236 +0100
+@@ -156,13 +156,13 @@
   */
  typedef struct 
  {
@@ -10,7 +11,7 @@
 -    uint16_t wIndex;
 -    uint16_t wLength;
 -    uint8_t data[20];
--} eu_cdc_t __attribute__ ((packed));
+-} __attribute__ ((packed)) eu_cdc_t;
 +    uint8_t bRequestType __attribute__ ((packed));
 +    uint8_t bRequest __attribute__ ((packed));
 +    uint16_t wValue __attribute__ ((packed));

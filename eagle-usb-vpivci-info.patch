@@ -1,12 +1,11 @@
---- eagle-usb-1.9.6/driver/user/eagle-usb.conf.orig	2004-02-22 22:11:30.000000000 +0100
-+++ eagle-usb-1.9.6/driver/user/eagle-usb.conf	2004-06-02 11:30:45.808491752 +0200
-@@ -22,7 +22,32 @@
- # OPTN6=00000000
- # OPTN7=02CD8044
- # OPTN15=09090909
+diff -urN eagle-usb-2.0.0.org/driver/user/eagle-usb.conf eagle-usb-2.0.0/driver/user/eagle-usb.conf
+--- eagle-usb-2.0.0.org/driver/user/eagle-usb.conf	2004-10-10 15:35:56.000000000 +0200
++++ eagle-usb-2.0.0/driver/user/eagle-usb.conf	2004-11-25 22:59:42.086428109 +0100
+@@ -47,7 +47,30 @@
+ #OPTN16=80818040
+ 
+ # VPI / VCI are in hexa (8, 23) is 8,35 in decimal
 -VPI=00000008
-+
-+# VPI/VCI
 +#
 +# Country     Network        Encapsulation           VPI VCI (decimal values)
 +#
@@ -25,10 +24,10 @@
 +# Sweden      Telia          IPoA LLC                8   35
 +# UK          BT             PPPoA vcmux             0   38
 +#
-+# References:	http://damien.bergamini.free.fr/ueagle/vpivci.html
++# References:  http://damien.bergamini.free.fr/ueagle/vpivci.html
 +#
-+# VPI/VCI -	hex. values - if you use values from table above,
-+#		you have to convert them from decimal to hex.
++# VPI/VCI -    hex. values - if you use values from table above,
++#              you have to convert them from decimal to hex.
 +#
 +VPI=00000000
  VCI=00000023
