@@ -70,30 +70,17 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %{__autoconf}
 
 %configure 
+make -C pppoa; make -C driver/firmware; make -C driver/user
 
+cd driver
+ln -sf %{_kernelsrcdir}/config-up .config
 
-if [ -z "$TMP" ]; then TMP="/tmp"; fi
-if [ -d "$TMP/linux" ]; then rm -rf "$TMP/linux/*"; else mkdir "$TMP/linux"; fi
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
+mv eagle-usb.ko eagle-usb.ko-done
 
-cp -rdp /usr/src/linux/* $TMP/linux/
-(cd $TMP/linux; make mrproper)
-%{?with_dist_kernel:cp /usr/src/linux/config-up $TMP/linux/.config}
-%{!?with_dist_kernel:cp /usr/src/linux/.config $TMP/linux/.config}
+ln -sf %{_kernelsrcdir}/config-smp .config
 
-%{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
-	  EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
-mv driver/eagle-usb.ko driver/eagle-usb.up
-
-# There should be a way to build smp too, but noidea how.
-%if %{with smp}
-(cd $TMP/linux; make mrproper)
-%{__make} clean
-%{?with_dist_kernel:cp /usr/src/linux/config-smp $TMP/linux/.config}
-%{!?with_dist_kernel:cp /usr/src/linux/.config $TMP/linux/.config}
-
-%{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
-	EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
-%endif
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 clean modules
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -109,11 +96,9 @@ cp driver/user/eagle-usb.conf $RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb/
 install driver/user/eaglestat $RPM_BUILD_ROOT%{_sbindir}
 install driver/user/eaglectrl $RPM_BUILD_ROOT%{_sbindir}
 
-install driver/eagle-usb.up $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/eagle-usb.ko
+install driver/eagle-usb.ko-done $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/eagle-usb.ko
 
-%if %{with smp}
 install driver/eagle-usb.ko $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/net/
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
