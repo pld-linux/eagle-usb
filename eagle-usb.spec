@@ -1,6 +1,8 @@
 #
 # Conditional build:
-# _without_dist_kernel		without distribution kernel
+%bcond_without	dist_kernel	# without distribution kernel
+%bcond_without	kernel		# don't build kernel modules
+%bcond_without	userspace	# don't build userspace tools
 #
 %define		_orig_name	fast800
 %define		_update_usb /sbin/update-usb.usermap
@@ -16,13 +18,15 @@ Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/eagle-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
 Patch0:		eagle-Makefile.patch
 Patch1:		eagle-firmware.patch
+Patch2:		%{name}-user2.6.patch
 URL:		http://fast800.tuxfamily.org/
-%{!?_without_dist_kernel:BuildRequires:	kernel-headers }
+%if %{with kernel}
+%{?with_dist_kernel:BuildRequires:	kernel-headers}
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
-Requires(post,postun):	/sbin/depmod
+%endif
 Requires:	ppp >= 2.4.1
-%{!?_without_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
+%{?with_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
 Obsoletes:	eagle-utils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -39,7 +43,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{!?_without_dist_kernel:%requires_releq_kernel_up}
+%{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel-usb-%{_orig_name}
@@ -54,8 +58,8 @@ Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{!?_without_dist_kernel:%requires_releq_kernel_smp}
-%{!?_without_dist_kernel:Provides:	kernel-usb-%{_orig_name}}
+%{?with_dist_kernel:%requires_releq_kernel_smp}
+%{?with_dist_kernel:Provides:	kernel-usb-%{_orig_name}}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel-smp-usb-%{_orig_name}
@@ -69,14 +73,16 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %setup -q -n eagle-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
+%if %{with kernel}
 install -d kernel-{up,smp}
 
 # UP
 %{__make} clean
 %{__make} -C driver \
-	CC=%{__cc} \
+	CC=%{kgcc} \
 %ifarch %{ix86} 
 	OPT="-I/usr/src/linux/include/asm-i386/mach-default" \
 %endif
@@ -87,38 +93,50 @@ install driver/adiusbadsl.o kernel-up
 CONFIG_SMP=y; export CONFIG_SMP
 %{__make} -C driver clean
 %{__make} -C driver \
-	CC=%{__cc} \
+	CC=%{kgcc} \
 %ifarch %{ix86} 
 	OPT="-I/usr/src/linux/include/asm-i386/mach-default -DSMP -D__SMP__" \
 %else
 	OPT="-D__SMP__ -DSMP" \
 %endif
 	KERNELSRC="%{_kernelsrcdir}"
-install driver/adiusbadsl.o kernel-smp/
+install driver/adiusbadsl.o kernel-smp
+%endif
 
-# Rest
-%{__make} \
-	KERNELSRC="%{_kernelsrcdir}"
+%if %{with userspace}
+%{__make} -C driver binaryfirmware adiuser \
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags} -Wall -DLINUX"
+
+%{__make} -C pppoa \
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags} -Wall -ansi \$(DEFINES) \$(PATHS)"
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
-install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp}
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/eagle}
 
+%if %{with kernel}
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/drivers/usb
 install kernel-up/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
 install kernel-smp/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
+%endif
+
+%if %{with userspace}
+install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp} \
+	$RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/eagle}
 
 install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 
 %{__make} -C driver/firmware install \
 	CONFIGDIR=$RPM_BUILD_ROOT/etc/analog \
 	DESTDIR=$RPM_BUILD_ROOT
+
 %{__make} -C driver/user install \
 	INSTALLDIR=%{_sbindir} \
 	CONFIGDIR=/etc/analog \
 	DESTDIR=$RPM_BUILD_ROOT
+
 install pppoa/pppoa $RPM_BUILD_ROOT%{_sbindir}
 echo 'n
 
@@ -131,6 +149,7 @@ n
 	HOTPLUGDIR=/etc/hotplug \
 	PPPDIR=/etc/ppp \
 	DESTDIR=$RPM_BUILD_ROOT
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -169,6 +188,7 @@ if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
 fi
 
+%if %{with userspace}
 %files
 %defattr(644,root,root,755)
 %doc BUGS Changelog FAQ TODO readme.txt
@@ -180,7 +200,9 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
+%endif
 
+%if %{with kernel}
 %files -n kernel-usb-%{_orig_name}
 %defattr(644,root,root,755)
 %doc readme.txt
@@ -190,3 +212,4 @@ fi
 %defattr(644,root,root,755)
 %doc readme.txt
 /lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
+%endif
