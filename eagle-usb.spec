@@ -1,6 +1,6 @@
 #
 # Conditional build:
-# _without_dist_kernel          without distribution kernel
+# _without_dist_kernel		without distribution kernel
 #
 %define		_orig_name	fast800
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
@@ -86,7 +86,7 @@ CONFIG_SMP=y; export CONFIG_SMP
 %{__make} -C driver clean
 %{__make} -e -C driver \
 	CC=%{kgcc} \
-        KERNELSRC="%{_kernelsrcdir}"
+	KERNELSRC="%{_kernelsrcdir}"
 install driver/adiusbadsl.o kernel-smp/
 
 # Rest
@@ -110,7 +110,7 @@ install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/%{name}
 	DESTDIR=$RPM_BUILD_ROOT
 %{__make} -C driver/user install \
 	INSTALLDIR=%{_sbindir} \
-        CONFIGDIR=/etc/analog \
+	CONFIGDIR=/etc/analog \
 	DESTDIR=$RPM_BUILD_ROOT
 install pppoa/pppoa $RPM_BUILD_ROOT%{_sbindir}
 echo 'n
