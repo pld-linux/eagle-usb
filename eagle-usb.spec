@@ -18,7 +18,7 @@ Patch1:		%{name}-firmware.patch
 Patch2:         %{name}-stupid.patch
 Patch3:         %{name}-port26.patch
 Patch4:         %{name}-fix_kern_headers.patch
-Patch5		%{name}-stopadsl.patch
+Patch5:		%{name}-stopadsl.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
 BuildRequires:	%{kgcc_package}
