@@ -88,8 +88,9 @@ mv driver/eagle-usb.ko driver/eagle-usb.up
 %if %{with smp}
 (cd $TMP/linux; make mrproper)
 %{__make} clean
-cp /usr/src/linux/config-smp /tmp/linux/.config
-%{__make} KERNELSRC="$TMP/linux"
+cp /usr/src/linux/config-smp $TMP/linux/.config
+%{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
+	EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
 %endif
 
 %install
