@@ -1,132 +1,146 @@
 #
+# TODO:
+#		- fix %%install, %%files
+#		- add utils/scripts, eagleconfig
+#
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
+%bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace tools
+%bcond_with	verbose		# verbose build (V=1)
 #
-%define		_orig_name	fast800
 %define		_update_usb /sbin/update-usb.usermap
-Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
-Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
+#
+Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
+Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
-Version:	1.0.4
-%define	_rel	8
+Version:	1.9.6
+%define		_rel	0.1
 Release:	%{_rel}
-License:	GPL
+License:	GPL v2
 Group:		Base/Kernel
-Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/eagle-%{version}.tar.gz
-# Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
-Patch0:		eagle-Makefile.patch
-Patch1:		eagle-firmware.patch
-Patch2:		%{name}-user2.6.patch
-Patch3:		%{name}-info_about_VPI_VCI.patch
-URL:		http://fast800.tuxfamily.org/
+Source0:	http://download.gna.org/eagleusb/%{name}-%{version}.tar.bz2
+# Source0-md5:	d2d94f396132e34417fa1b26bcde7287
+#Patch0:		eagle-Makefile.patch
+#Patch1:		eagle-firmware.patch
+#Patch2:		%{name}-user2.6.patch
+#Patch3:		%{name}-info_about_VPI_VCI.patch
+Patch4:		%{name}-eu_main.patch
+Patch5:		%{name}-eu_types.patch
+URL:		http://gna.org/projects/eagleusb
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-headers < 2.5}
-BuildRequires:	%{kgcc_package}
-BuildRequires:	rpmbuild(macros) >= 1.118
+%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
+BuildRequires:	rpmbuild(macros) >= 1.153
 %endif
 Requires:	ppp >= 2.4.1
-%{?with_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
+Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}}
 Obsoletes:	eagle-utils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
+Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems.
 
 %description -l pl
 Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 800...).
 
-%package -n kernel-usb-%{_orig_name}
-Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
-Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
+%package -n kernel-usb-eagle
+Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
+Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
+Obsoletes:	kernel-usb-fast800
 
-%description -n kernel-usb-%{_orig_name}
-Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
+%description -n kernel-usb-eagle
+Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems.
 
-%description -n kernel-usb-%{_orig_name} -l pl
-Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
-800...).
+%description -n kernel-usb-eagle -l pl
+Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...).
 
-%package -n kernel-smp-usb-%{_orig_name}
-Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems
-Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800...)
+%package -n kernel-smp-usb-eagle
+Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
+Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
-%{?with_dist_kernel:Provides:	kernel-usb-%{_orig_name}}
 Requires(post,postun):	/sbin/depmod
+Provides:	kernel-usb-eagle
+Obsoletes:	kernel-smp-usb-fast800
 
-%description -n kernel-smp-usb-%{_orig_name}
-Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
+%description -n kernel-smp-usb-eagle
+Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems.
 
-%description -n kernel-smp-usb-%{_orig_name} -l pl
-Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
-800...).
+%description -n kernel-smp-usb-eagle -l pl
+Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...).
 
 %prep
-%setup -q -n eagle-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%setup -q
+#patch0 -p1
+#patch1 -p1
+#patch2 -p1
+#patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc
-sed -e 's/-mpreferred-stack-boundary=2//' driver/Makefile > m.tmp
-mv -f m.tmp driver/Makefile
+sed -i 's/-mpreferred-stack-boundary=2//' driver/Makefile
 %endif
 
 %build
 %if %{with kernel}
-install -d kernel-{up,smp}
-
-# UP
-%{__make} clean
-%{__make} -C driver \
-	CC=%{kgcc} \
-	KERNELSRC="%{_kernelsrcdir}"
-install driver/adiusbadsl.o kernel-up
-
-# SMP
-CONFIG_SMP=y; export CONFIG_SMP
-%{__make} -C driver clean
-%{__make} -C driver \
-	CC=%{kgcc} \
-	CONFIG_SMP=1 \
-	KERNELSRC="%{_kernelsrcdir}"
-install driver/adiusbadsl.o kernel-smp
+cd driver
+for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
+    if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
+	exit 1
+    fi
+    rm -rf include
+    install -d include/{config,linux}
+    ln -sf %{_kernelsrcdir}/config-up .config
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-up.h include/linux/autoconf.h
+    ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+    touch include/config/MARKER
+    %{__make} -C %{_kernelsrcdir} modules \
+	RCS_FIND_IGNORE="-name '*.ko' -o" \
+	M=$PWD O=$PWD \
+	%{?with_verbose:V=1}
+    mv eagle-usb{,-$cfg}.ko
+done
+cd -
 %endif
 
 %if %{with userspace}
-%{__make} -C driver binaryfirmware adiuser \
-	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags} -Wall -DLINUX"
-
-%{__make} -C pppoa \
-	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags} -Wall -ansi \$(DEFINES) \$(PATHS)"
+for i in driver/firmware driver/user pppoa; do
+    %{__make} -C $i \
+	    CC="%{__cc}" \
+	    CFLAGS="%{rpmcflags}" \
+	    LDFLAGS="%{rpmldflags}"
+done
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with kernel}
+cd driver
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/drivers/usb
-install kernel-up/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
-install kernel-smp/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
+install eagle-usb-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/eagle-usb.ko
+%if %{with smp} && %{with dist_kernel}
+install eagle-usb-smp.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/eagle-usb.ko
+%endif
+cd -
 %endif
 
 %if %{with userspace}
-install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp} \
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{analog,hotplug,ppp} \
 	$RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/eagle}
 
-install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
+#install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 
 %{__make} -C driver/firmware install \
 	CONFIGDIR=$RPM_BUILD_ROOT/etc/analog \
@@ -134,7 +148,7 @@ install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 
 %{__make} -C driver/user install \
 	INSTALLDIR=%{_sbindir} \
-	CONFIGDIR=/etc/analog \
+	CONFIGDIR=%{_sysconfdir}/analog \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install pppoa/pppoa $RPM_BUILD_ROOT%{_sbindir}
@@ -143,11 +157,11 @@ echo 'n
 
 n
 n
-' | %{__make} -C scripts install \
+' | %{__make} -C utils/scripts install \
 	INSTALLDIR=%{_sbindir} \
-	CONFIGDIR=/etc/analog \
-	HOTPLUGDIR=/etc/hotplug \
-	PPPDIR=/etc/ppp \
+	CONFIGDIR=%{_sysconfdir}/analog \
+	HOTPLUGDIR=%{_sysconfdir}/hotplug \
+	PPPDIR=%{_sysconfdir}/ppp \
 	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
@@ -164,25 +178,25 @@ if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
 fi
 
-%post -n kernel-usb-%{_orig_name}
+%post -n kernel-usb-eagle
 %depmod %{_kernel_ver}
 if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
 fi
 
-%postun -n kernel-usb-%{_orig_name}
+%postun -n kernel-usb-eagle
 %depmod %{_kernel_ver}
 if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
 fi
 
-%post	-n kernel-smp-usb-%{_orig_name}
+%post	-n kernel-smp-usb-eagle
 %depmod %{_kernel_ver}smp
 if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
 fi
 
-%postun -n kernel-smp-usb-%{_orig_name}
+%postun -n kernel-smp-usb-eagle
 %depmod %{_kernel_ver}smp
 if [ -x %{_update_usb} ]; then
 	/sbin/update-usb.usermap
@@ -203,12 +217,12 @@ fi
 %endif
 
 %if %{with kernel}
-%files -n kernel-usb-%{_orig_name}
+%files -n kernel-usb-eagle
 %defattr(644,root,root,755)
 %doc readme.txt
 /lib/modules/%{_kernel_ver}/kernel/drivers/usb/*
 
-%files -n kernel-smp-usb-%{_orig_name}
+%files -n kernel-smp-usb-eagle
 %defattr(644,root,root,755)
 %doc readme.txt
 /lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
