@@ -1,87 +1,55 @@
 diff -urN eagle-usb-2.0.0.orig/driver/eu_eth.c eagle-usb-2.0.0.patch/driver/eu_eth.c
 --- eagle-usb-2.0.0.orig/driver/eu_eth.c	2004-10-29 19:29:39.000000000 +0200
-+++ eagle-usb-2.0.0.patch/driver/eu_eth.c	2005-01-20 22:24:02.206743568 +0100
-@@ -237,7 +237,7 @@
-     if ( EU_TEST_FLAG (ins, EU_WRITING ) )
-     {
-         ins->urb_write->transfer_flags &= ~URB_ASYNC_UNLINK;
--        usb_unlink_urb(ins->urb_write);        
-+        usb_kill_urb(ins->urb_write);        
-     }
-     
-     /*
-@@ -497,10 +497,10 @@
-     */
-     
-     ins->urb_write->transfer_flags |= URB_ASYNC_UNLINK;
--    usb_unlink_urb(ins->urb_write);
-+    usb_kill_urb(ins->urb_write);
++++ eagle-usb-2.0.0.patch/driver/eu_eth.c	2005-01-21 09:05:55.605326640 +0100
+@@ -34,7 +34,9 @@
+ #include "eu_eth.h"
+ #include "eu_sm.h"
  
-     ins->urb_oam_write->transfer_flags |= URB_ASYNC_UNLINK;
--    usb_unlink_urb(ins->urb_oam_write);
-+    usb_kill_urb(ins->urb_oam_write);
-     
-     /* We must reset the transaction time to keep the watchdog quiet: */
-     dev->trans_start = jiffies;
+-
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,9)
++#define usb_unlink_urb usb_kill_urb
++#endif
+ 
+ /* --------------------- Private Functions Declaration --------------------- */
+ static int eu_eth_open ( struct net_device *dev );
 diff -urN eagle-usb-2.0.0.orig/driver/eu_main.c eagle-usb-2.0.0.patch/driver/eu_main.c
 --- eagle-usb-2.0.0.orig/driver/eu_main.c	2004-11-07 10:06:55.000000000 +0100
-+++ eagle-usb-2.0.0.patch/driver/eu_main.c	2005-01-19 23:49:41.000000000 +0100
-@@ -953,7 +953,7 @@
-     {
-         eu_dbg (DBG_INIT,"Stop interrupt URB\n");
-         ins->urb_int->transfer_flags &= ~URB_ASYNC_UNLINK;
--        usb_unlink_urb(ins->urb_int);
-+        usb_kill_urb(ins->urb_int);
-         usb_free_urb (ins->urb_int);
-         EU_CLEAR_FLAG (ins, EU_HAS_INT);
-     }
-@@ -1048,7 +1048,7 @@
-         if ( ins->read_urb[i] ) 
-         {
-             ins->read_urb[i]->transfer_flags &= ~URB_ASYNC_UNLINK;
--            usb_unlink_urb ( ins->read_urb[i] );
-+            usb_kill_urb ( ins->read_urb[i] );
-             usb_free_urb ( ins->read_urb[i] );
-             ins->read_urb[i] = NULL;
-         }
-@@ -1070,14 +1070,14 @@
-      * Free write urb: it has been unlinked in eu_eth_close
-      */
-     ins->urb_write->transfer_flags &= ~URB_ASYNC_UNLINK;
--    usb_unlink_urb ( ins->urb_write );
-+    usb_kill_urb ( ins->urb_write );
-     usb_free_urb ( ins->urb_write );
++++ eagle-usb-2.0.0.patch/driver/eu_main.c	2005-01-21 09:06:56.187116808 +0100
+@@ -53,6 +53,10 @@
+ #include "eu_eth.h"
+ #include "eu_boot_sm.h"
  
-     /*
-      * Free urb_oam_write
-      */
-     ins->urb_oam_write->transfer_flags &= ~URB_ASYNC_UNLINK;
--    usb_unlink_urb(ins->urb_oam_write);
-+    usb_kill_urb(ins->urb_oam_write);
-     usb_free_urb ( ins->urb_oam_write );
-     
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,9)
++#define usb_unlink_urb usb_kill_urb
++#endif
++
+ /* ------------------------------- Private Macros ------------------------------- */
  
+ #define CASE_PREFIRM	EAGLE_I_PID_PREFIRM:    \
 diff -urN eagle-usb-2.0.0.orig/driver/eu_utils.c eagle-usb-2.0.0.patch/driver/eu_utils.c
 --- eagle-usb-2.0.0.orig/driver/eu_utils.c	2004-11-07 10:06:55.000000000 +0100
-+++ eagle-usb-2.0.0.patch/driver/eu_utils.c	2005-01-20 22:24:08.791742496 +0100
-@@ -436,7 +436,7 @@
-         qhead = list_entry ( ins->ctrl_urb_ipg_q.next, queued_urb_t, list);
-         
-         qhead->urb->transfer_flags &= ~URB_ASYNC_UNLINK;
--        usb_unlink_urb(qhead->urb);
-+        usb_kill_urb(qhead->urb);
-     }
-     
-     spin_unlock_irqrestore (&ins->ctrl_q_lock, flags);
++++ eagle-usb-2.0.0.patch/driver/eu_utils.c	2005-01-21 09:07:36.400003520 +0100
+@@ -31,6 +31,9 @@
+ #include "debug.h"
+ #include "eu_firmware.h"
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,9)
++#define usb_unlink_urb usb_kill_urb
++#endif
+ 
+ /* ----------------------- Private Macros/Variables ------------------------ */
+ 
 diff -urN eagle-usb-2.0.0.orig/driver/Pipes.c eagle-usb-2.0.0.patch/driver/Pipes.c
 --- eagle-usb-2.0.0.orig/driver/Pipes.c	2004-10-17 22:35:55.000000000 +0200
-+++ eagle-usb-2.0.0.patch/driver/Pipes.c	2005-01-20 22:23:51.918307648 +0100
-@@ -656,7 +656,7 @@
-         {
-             eu_dbg (DBG_READ,"About to unlink read urb %u\n",i);
-             ins->read_urb[i]->transfer_flags &= ~URB_ASYNC_UNLINK;
--            usb_unlink_urb( ins->read_urb[i] );
-+            usb_kill_urb( ins->read_urb[i] );
-             
-             eu_dbg (DBG_READ,"Read urb %u unlinked.\n",i);
-         }
++++ eagle-usb-2.0.0.patch/driver/Pipes.c	2005-01-21 09:07:57.586782640 +0100
+@@ -35,6 +35,10 @@
+ #include "debug.h"
+ #include "eu_sm.h"
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,9)
++#define usb_unlink_urb usb_kill_urb
++#endif
++
+ /**
+  * --| Reception Mechanism:
+  *
