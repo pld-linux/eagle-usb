@@ -2,7 +2,7 @@
 # Conditional build:
 # _without_dist_kernel          without distribution kernel
 #
-%define		_without_smp	1
+
 %define		_orig_name	fast800
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
