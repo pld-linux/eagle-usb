@@ -10,7 +10,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle-usb
 Version:	1.9.6
-Release:	0.2
+Release:	0.3
 License:	GPL
 Group:		Base/Kernel
 Source0: 	http://dl.sourceforge.net/sourceforge/eagle-usb/%{name}-%{version}.tar.bz2
@@ -27,6 +27,7 @@ BuildRequires:	rpmbuild(macros) >= 1.118
 %endif
 Requires:	ppp >= 2.4.1
 Obsoletes:	eagle-utils
+Obsoletes:	eagle
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -39,7 +40,7 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 %package -n kernel-usb-%{_orig_name}
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
-Release:	%{_snap}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
@@ -54,7 +55,7 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 %package -n kernel-smp-usb-%{_orig_name}
 Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800...)
-Release:	%{_snap}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
 Requires(post,postun):	/sbin/depmod
@@ -152,7 +153,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc BUGS Changelog FAQ TODO readme.txt
+##%doc BUGS Changelog FAQ TODO readme.txt
 %dir %{_sysconfdir}/eagle-usb
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/eagle-usb.conf
 %attr(755,root,root) %{_sbindir}/*
