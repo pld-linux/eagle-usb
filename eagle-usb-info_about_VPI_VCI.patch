@@ -1,0 +1,36 @@
+diff -Nura eagle-1.0.4/driver/user/sagemf800.conf eagle-1.0.4.new/driver/user/sagemf800.conf
+--- eagle-1.0.4/driver/user/sagemf800.conf	2003-02-11 00:29:49.000000000 +0100
++++ eagle-1.0.4.new/driver/user/sagemf800.conf	2004-04-28 11:28:10.000000000 +0200
+@@ -21,7 +21,31 @@
+ # OPTN6=00000000
+ # OPTN7=02CD8044
+ # OPTN15=09090909
+-VPI=00000008
++
++# VPI/VCI
++#
++# Country     Network        Encapsulation           VPI VCI (decimal values)
++#
++# Belgium     Belgacom       PPPoA vcmux             8   35
++# France      FT             PPPoA vcmux             8   35
++# France      Free dégroupé  IPoA vcmux              8   36
++# Finland     Sonera         IPoA LLC                0   100
++# Germany     DT             PPPoE LLC               1   32
++# Hungary     Matav          PPPoE LLC               1   32
++# Italy       Telecom Italia PPPoA vcmux             8   35
++# Netherlands KPN            PPPoA vcmux             8   48
++# Poland      TPSA           PPPoA vcmux             0   35
++# Portugal    PT             PPPoE LLC               0   35
++# Spain       Retevision     PPPoA vcmux             8   35
++# Spain       Telefonica     IPoA vcmux ou PPPoE LLC 8   32
++# Sweden      Telia          IPoA LLC                8   35
++# UK          BT             PPPoA vcmux             0   38
++
++#References:	http://damien.bergamini.free.fr/ueagle/vpivci.html
++
++# VPI/VCI -	hex. values - if you use values from table above,
++#		you have to convert them from decimal to hex.
++VPI=00000000
+ VCI=00000023
+ 
+ #The following values are valid for encapsulation :
