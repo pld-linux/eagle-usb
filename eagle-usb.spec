@@ -74,17 +74,27 @@ install -d kernel-{up,smp}
 %{__autoconf}
 
 %configure --with-eagle-usb-bindir=%{_datadir}/misc/
+
+cp -rdp /usr/src/linux /tmp/linux
+(cd /tmp/linux; make mrproper)
+cp /usr/src/linux/config-up .config
 %{__make}
+mv driver/eagle-usb.ko driver/eagle-usb.up
 
 # There should be a way to build smp too, but noidea how.
+(cd /tmp/linux; make mrproper)
+%{__make} clean
+cp /usr/src/linux/config-smp .config
+%{__make}
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/drivers/usb/net
 
-mv $RPM_BUILD_ROOT/lib/modules/%{__kernel_ver}/misc/eagle-usb.ko $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/
+mv driver/eagle-usb.up $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/
+mv driver/eagle-usb.ko $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/net/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -114,8 +124,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/*
 
-#%%%if %{with smp}
-#%%%files -n kernel-smp-usb-%{_orig_name}
-#%%%defattr(644,root,root,755)
-#%%/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
-#%%%endif
+%if %{with smp}
+%files -n kernel-smp-usb-%{_orig_name}
+%defattr(644,root,root,755)
+/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
+%endif
