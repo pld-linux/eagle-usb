@@ -7,7 +7,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle
 Version:	1.0.4
-%define	_rel	4
+%define	_rel	5
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
@@ -15,7 +15,10 @@ Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-firmware.patch
-Patch2:		%{name}-stopadsl.patch
+Patch2:         %{name}-stupid.patch
+Patch3:         %{name}-port26.patch
+Patch4:         %{name}-fix_kern_headers.patch
+Patch5		%{name}-stopadsl.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
 BuildRequires:	%{kgcc_package}
@@ -71,37 +74,67 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch1 -p1
 %patch2 -p1
 
+cd driver/
+%patch3 -p0 -b .niedakh
+
+cd ../
+mkdir kern-fixed
+cd kern-fixed
+cp %{_includedir}/linux/usb.h ./
+cp %{_includedir}/linux/usbdevice_fs.h ./
+
+%patch4 -p0 -b .niedakh
+%patch5 -p1
+
+
 %build
 install -d kernel-{up,smp}
+sed -i -e "s,linux/modversions.h,config/modversions.h,g" driver/Adiutil.h
+
+%ifarch %{ix86}
+export NEWFLAGS=-I%{_kernelsrcdir}/include/asm-i386/mach-default
+%else
+#check different archs for irq_vectors.h
+export NEWFLAGS=""
+%endif
+
 
 # UP
 %{__make} clean
 %{__make} -C driver \
 	CC=%{kgcc} \
 	KERNELSRC="%{_kernelsrcdir}"
-install driver/adiusbadsl.o kernel-up
+install driver/AdiUsbAdslDriver.ko kernel-up
+
 
 # SMP
+%if %{with smp}
 CONFIG_SMP=y; export CONFIG_SMP
 %{__make} -C driver clean
 %{__make} -e -C driver \
 	CC=%{kgcc} \
         KERNELSRC="%{_kernelsrcdir}"
-install driver/adiusbadsl.o kernel-smp/
+install driver/AdiUsbAdslDriver.ko kernel-smp/
+%endif
 
 # Rest
 %{__make} \
-	KERNELSRC="%{_kernelsrcdir}"
+		KERNELSRC="%{_kernelsrcdir}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/net
 install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp}
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/%{name}}
 
-install kernel-up/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
-install kernel-smp/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
+install kernel-up/AdiUsbAdslDriver.ko $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/eagle.ko
+
+%if %{with smp}
+install kernel-smp/AdiUsbAdslDriver.ko $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/net/eagle.ko
+%endif
+
+
 
 install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/%{name}
 
@@ -167,7 +200,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc readme.txt
 /lib/modules/%{_kernel_ver}/kernel/drivers/usb/*
 
+%if %{with smp}
 %files -n kernel-smp-usb-%{_orig_name}
 %defattr(644,root,root,755)
 %doc readme.txt
 /lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
+%endif
