@@ -1,83 +1,17 @@
---- eagle-usb/pppoa/Makefile.orig	2003-11-17 18:08:16.000000000 +0100
-+++ eagle-usb/pppoa/Makefile	2003-11-17 18:08:28.000000000 +0100
-@@ -45,7 +45,7 @@
- 	gcc $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o debug.o debug.c
+--- eagle-usb/driver/user/eaglectrl.c.orig	2004-01-13 23:49:59.646045512 +0100
++++ eagle-usb/driver/user/eaglectrl.c	2004-01-13 23:50:45.165125560 +0100
+@@ -54,13 +54,8 @@
  
- install: pppoa
--	$(INSTALL) -m 775 -o root -g root pppoa $(SBINDIR)
-+	$(INSTALL) pppoa $(SBINDIR)
+ #define NB_SUPPORTED_PRODS  (sizeof(supported_products)/sizeof(supported_products[0]))
  
- uninstall:
- 	rm -f /usr/sbin/pppoa
---- eagle-usb/driver/firmware/Makefile.orig	2003-11-17 18:03:24.000000000 +0100
-+++ eagle-usb/driver/firmware/Makefile	2003-11-17 18:03:37.000000000 +0100
-@@ -36,7 +36,7 @@
+-#ifndef CONF_DIR
+ #define CONF_DIR            "/etc/eagle-usb"
+-#endif
+-
+-#ifndef BIN_DIR
+-#define BIN_DIR             "/etc/eagle-usb"
+-#endif
++#define BIN_DIR             "/usr/share/misc"
  
- install : dsp_code_pots.bin dsp_code_isdn.bin 
- 	mkdir -p $(EAGLEUSB_BINDIR)
--	$(INSTALL) -m 0664 -o root -g root $^ $(EAGLEUSB_BINDIR)
-+	$(INSTALL) $^ $(EAGLEUSB_BINDIR)
- 
- uninstall:
- 	rm -f $(EAGLEUSB_BINDIR)/dsp_code_pots.bin $(EAGLEUSB_BINDIR)/dsp_code_isdn.bin
---- eagle-usb/utils/scripts/Makefile.orig	2003-12-15 16:33:08.582485448 +0100
-+++ eagle-usb/utils/scripts/Makefile	2003-12-15 16:35:59.179550752 +0100
-@@ -59,7 +59,6 @@
- 	$(INSTALL) -m 0755 -o root -g root tmp/eu_init $(EU_SCRIPT_DIR) && \
- 	$(INSTALL) -m 0644 -o root -g root usb.usermap $(EU_SCRIPT_DIR) && \
- 	$(INSTALL) -m 0644 -o root -g root options $(EU_SCRIPT_DIR) && \
--	cp -R lang/* $(EU_LANG_DIR) && \
- 	rm -Rf $(EU_LANG_DIR)/CVS && \
- 	touch $(EU_SCRIPT_DIR)/lock
- #	eagle-usb.conf => installé par ~/driver/user/Makefile
---- eagle-usb/driver/user/Makefile.orig	2004-01-03 21:32:10.000000000 +0100
-+++ eagle-usb/driver/user/Makefile	2004-01-13 23:22:15.039104232 +0100
-@@ -16,9 +16,9 @@
- 
- install : eaglectrl
- 	mkdir -p $(INSTALLDIR)
--	$(INSTALL) -m 0755 -o root -g root eaglectrl $(INSTALLDIR) && \
--	$(INSTALL) -m 0755 -o root -g root eaglestat $(INSTALLDIR) && \
--	$(INSTALL) -m 0644 -o root -g root eagle-usb.conf $(EU_SCRIPT_DIR)/eagle-usb.conf.sample
-+	$(INSTALL) eaglectrl $(INSTALLDIR) && \
-+	$(INSTALL) eaglestat $(INSTALLDIR) && \
-+	$(INSTALL) eagle-usb.conf $(EU_SCRIPT_DIR)/eagle-usb.conf.sample
- #	mkdir -p $(EAGLEUSB_CONFDIR)
- #	$(INSTALL) -m 0755 -o root -g root CMVep.txt $(CONFIGDIR)/
- #	$(INSTALL) -m 0755 -o root -g root CMVei.txt $(CONFIGDIR)/
-
---- eagle-usb/configure.in.orig	2004-01-13 23:28:41.801307440 +0100
-+++ eagle-usb/configure.in	2004-01-13 23:31:17.670611704 +0100
-@@ -41,11 +41,18 @@
- fi
- 
- # ===== arg: eagle-usb-confdir =====
--#AC_ARG_WITH(eagle-usb-confdir,
--#[  --with-eagle-usb-confdir   Path to EAGLE USB configuration files ($CONFDIR/eagle-usb) ],
--#EAGLEUSB_CONFDIR=${withval},
--#EAGLEUSB_CONFDIR=${CONFDIR}/eagle-usb
--#)
-+AC_ARG_WITH(eagle-usb-confdir,
-+[  --with-eagle-usb-confdir   Path to EAGLE USB configuration files ($CONFDIR/eagle-usb) ],
-+EAGLEUSB_CONFDIR=${withval},
-+EAGLEUSB_CONFDIR=${CONFDIR}/eagle-usb
-+)
-+
-+# ===== arg: eagle-usb-bindir =====
-+AC_ARG_WITH(eagle-usb-confdir,
-+[  --with-eagle-usb-confdir   Path to EAGLE USB configuration files ($CONFDIR/eagle-usb) ],
-+EAGLEUSB_CONFDIR=${withval},
-+EAGLEUSB_CONFDIR=${CONFDIR}/eagle-usb
-+)
- 
- # ===== arg: language =====
- AC_ARG_WITH(lang,
-@@ -194,6 +201,8 @@
- AC_SUBST(KERNELSRC)
- AC_SUBST(KERNELVER)
- AC_SUBST(CONFDIR)
-+AC_SUBST(EAGLEUSB_CONFDIR)
-+AC_SUBST(EAGLEUSB_BINDIR)
- AC_SUBST(EU_LANG)
- AC_SUBST(DIALOG)
- AC_SUBST(DHCP)
+ #define ISDN_BIN_FILE    "dsp_code_isdn.bin"
+ #define POTS_BIN_FILE    "dsp_code_pots.bin"
