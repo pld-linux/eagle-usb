@@ -1,0 +1,354 @@
+--- AdiUsbAdslDriver.c.orig	2003-09-11 19:48:46.000000000 +0200
++++ AdiUsbAdslDriver.c	2003-09-12 12:40:54.000000000 +0200
+@@ -34,6 +34,7 @@
+ #include <linux/init.h>
+ #include <linux/proc_fs.h>
+ #include <linux/list.h>
++#include <linux/interrupt.h>
+ #include <asm/uaccess.h>
+ #include <linux/if_arp.h>
+ #include "AdiUsbAdslDriver.h"
+@@ -275,7 +276,7 @@
+     }
+ 
+     /* Try to select the first USB configuration: */
+-    if (usb_set_configuration(usb, usb->config[0].bConfigurationValue) < 0)
++    if (usb_set_configuration(usb, usb->config[0].desc.bConfigurationValue) < 0)
+     {
+         adi_err ("adi_probe : set_configuration failed.\n");
+         
+@@ -419,7 +420,7 @@
+ #ifdef USEBULK
+                 pHw->pIncomingData[i] = GET_KBUFFER(INCOMING_DATA_SIZE);
+ #else
+-                pHw->pUrbReadIso[i]   = usb_alloc_urb(pHw->IsoFramesPerUrb);
++                pHw->pUrbReadIso[i]   = usb_alloc_urb(pHw->IsoFramesPerUrb,in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
+                 pHw->pIncomingData[i] = GET_KBUFFER((pHw->IsoPipeSize * pHw->IsoFramesPerUrb));
+ #endif
+                 if (!pHw->pIncomingData[i])
+@@ -534,10 +535,10 @@
+             usb_driver_claim_interface(&adi_driver, &(usb->actconfig->interface[1]), pHw);
+             usb_driver_claim_interface(&adi_driver, &(usb->actconfig->interface[2]), pHw);
+             /* Get information about our endpoints*/
+-            epoutidma = usb->actconfig->interface[1].altsetting[0].endpoint + 0;
+-            epoutdata = usb->actconfig->interface[1].altsetting[0].endpoint + 1; 
++            epoutidma = &usb->actconfig->interface[1]->altsetting[0].endpoint->desc;
++            epoutdata = &usb->actconfig->interface[1]->altsetting[0].endpoint->desc;
+ #ifdef USEBULK
+-            epindata  = usb->actconfig->interface[2].altsetting[0].endpoint + 0;
++            epindata  = &usb->actconfig->interface[2]->altsetting[0].endpoint->desc;
+ #else /*ifdef USEBULK*/
+             /*******************************************************************************/
+             /* Need to eventually choose the alternate interface based on the train ds rate*/
+@@ -552,7 +553,7 @@
+             }
+             else
+             {
+-                epindata=usb->actconfig->interface[kUSB_INTF_IN].altsetting[kFASTEST_ISO_INTF].endpoint+0; 
++                epindata=usb->actconfig->interface[kUSB_INTF_IN]->altsetting[kFASTEST_ISO_INTF].endpoint+0; 
+             }
+ #endif /*ifdef USEBULK else*/
+ 
+@@ -694,7 +695,7 @@
+ 	    /* Unlink pending interrupt URBs: */
+ 	    if (pHw->HasIntURB)
+ 	    {
+-                pHw->urbInt.transfer_flags &= ~USB_ASYNC_UNLINK;
++                pHw->urbInt.transfer_flags &= ~URB_ASYNC_UNLINK;
+                 usb_unlink_urb(&pHw->urbInt);
+ 		pHw->HasIntURB = FALSE;
+ 	    }
+@@ -1231,13 +1232,13 @@
+                         {
+                             /* Get the USB endpoint for IDMA uploading: */
+                             struct usb_endpoint_descriptor *epint =
+-                                dev->actconfig->interface[0].altsetting[0].endpoint + 0;
++                                &dev->actconfig->interface[0]->altsetting[0].endpoint->desc;
+                             /* Install the interrupt handler to send IDMA pages to the modem
+                                and handle further incoming data: */
+                             usb_fill_int_urb(&pHw->urbInt, dev, pHw->pipeIntIn, pHw->pInterruptData,
+                                              sizeof(CDC_NOTIFY), adi_irq, pHw, epint->bInterval);
+                             pHw->HasIntURB = TRUE;
+-                            if (usb_submit_urb(&pHw->urbInt) < 0)
++                            if (usb_submit_urb(&pHw->urbInt,0) < 0)
+                             {
+                                 adi_err ("Unable to submit interrupt URB!\n");
+                         
+@@ -1573,7 +1574,7 @@
+     /* Stop our outgoing data urbs */
+     if (pHw->IsWriting)
+     {
+-	pHw->urbWrite.transfer_flags &= ~USB_ASYNC_UNLINK;
++	pHw->urbWrite.transfer_flags &= ~URB_ASYNC_UNLINK;
+ 	usb_unlink_urb(&pHw->urbWrite);
+     }
+     
+@@ -1787,10 +1788,10 @@
+     URB. This will call WriteCompletion, which will call
+     netif_wakequeue:
+     */
+-    pHw->urbWrite.transfer_flags |= USB_ASYNC_UNLINK;
++    pHw->urbWrite.transfer_flags |= URB_ASYNC_UNLINK;
+     usb_unlink_urb(&pHw->urbWrite);
+ 
+-    pHw->urbOAMWrite.transfer_flags |= USB_ASYNC_UNLINK;
++    pHw->urbOAMWrite.transfer_flags |= URB_ASYNC_UNLINK;
+     usb_unlink_urb(&pHw->urbOAMWrite);
+     
+     /* We must reset the transaction time to keep the watchdog quiet: */
+--- Boot.c.orig	2003-09-12 12:43:26.000000000 +0200
++++ Boot.c	2003-09-12 14:22:12.000000000 +0200
+@@ -29,7 +29,8 @@
+ #include "Util.h"
+ #include "Me.h"
+ #include "debug.h"
+-
++#define  USB_ST_NOERROR	0
++#define USB_QUEUE_BULK          0x0010
+ /*********************************************************************************/
+ /* Local only prototypes							 */
+ /*********************************************************************************/
+@@ -465,14 +466,14 @@
+     memcpy(xfer_buf, pData, Size);
+ 
+     /* Get an URB and prepare it for submission*/
+-    urb = usb_alloc_urb(0);
++    urb = usb_alloc_urb(0,0);
+ 
+     usb_fill_bulk_urb(urb, pHw->usbdev, pHw->pipeBulkIdmaOut, xfer_buf, Size, IDMACompletion, pHw);
+     urb->transfer_flags |= USB_QUEUE_BULK;
+ 
+     adi_dbg (DBG_BOOT,"Submitting BULK URB %p\n", urb);
+     
+-    ret = usb_submit_urb(urb);
++    ret = usb_submit_urb(urb,0);
+ 
+ IDMA_exit:
+     adi_leaves (DBG_BOOT);
+--- Me.c.orig	2003-09-12 14:56:03.000000000 +0200
++++ Me.c	2003-09-12 14:55:47.000000000 +0200
+@@ -126,7 +126,7 @@
+ #include "Sm.h"
+ #include "Msg.h"
+ #include "debug.h"
+-
++#define  USB_ST_NOERROR 0
+ /***************************************************************************************/
+ /*  ProcessIncomingCmv								       */
+ /*										       */
+--- Oam.c.orig	2003-09-12 14:56:41.000000000 +0200
++++ Oam.c	2003-09-12 14:57:11.000000000 +0200
+@@ -19,6 +19,7 @@
+ 
+ #include "Adiutil.h"
+ #include "debug.h"
++#define  USB_ST_NOERROR 0
+ 
+ //---------------------------------------------------------------------------
+ // Some sample OAM cells from Dennis Chan ...
+@@ -547,7 +548,7 @@
+     FILL_BULK_URB(&pHw->urbOAMWrite, pHw->usbdev, pHw->pipeBulkDataOut,
+                   pCell,uiTotalBytes , AmoebaCompletion, pHw);
+ 
+-    result = usb_submit_urb(&pHw->urbOAMWrite);
++    result = usb_submit_urb(&pHw->urbOAMWrite,0);
+     
+     adi_dbg (DBG_OAM,"usb_submit_urb result=%d \n",result);
+     adi_leaves (DBG_OAM);
+--- Pipes.c.orig	2003-09-12 14:27:57.000000000 +0200
++++ Pipes.c	2003-09-12 15:42:29.091320528 +0200
+@@ -49,6 +49,8 @@
+ /* the DMA of an incoming packet could be happening while the CPU is doing the    */
+ /* reassembly of another packet.						  */
+ /**********************************************************************************/
++#define  USB_ST_NOERROR 0
++#define USB_QUEUE_BULK          0x0010
+ void StartReadPipe(Hardware *pHw)
+ {
+     int result;
+@@ -92,7 +94,7 @@
+             memset(pUrb, 0, sizeof(*pUrb));
+             spin_lock_init(&pUrb->lock);
+             /*Init the URB fields per the spec*/
+-            pUrb->next                   = pHw->pUrbReadIso[(i+1) % INCOMING_Q_SIZE];
++//            pUrb->next                   = pHw->pUrbReadIso[(i+1) % INCOMING_Q_SIZE];
+             pUrb->dev                    = pHw->usbdev;
+             pUrb->pipe                   = pHw->pipeIsoDataIn;
+             pUrb->context                = pHw;
+@@ -100,7 +102,7 @@
+             pUrb->transfer_buffer        = pHw->pIncomingData[i];
+             pUrb->transfer_buffer_length = pHw->IsoPipeSize * pHw->IsoFramesPerUrb;
+             pUrb->number_of_packets      = pHw->IsoFramesPerUrb;
+-            pUrb->transfer_flags         = USB_ISO_ASAP;
++            pUrb->transfer_flags         = URB_ISO_ASAP;
+             /*
+               CC - FIXME : Voir ce que ces flags signifient avant de les activer :
+               pUrb->transfer_flags         &= ~USB_DISABLE_SPD;	// Curieux: cela suppose que ISO_ASAP contiendrait DISABLE_SPD ?
+@@ -119,7 +121,7 @@
+         for (i=0; i<INCOMING_Q_SIZE; i++)
+         {
+             /*Ok, data is initialized, fire off the ISO URB ring*/
+-            if ((result = usb_submit_urb(pHw->pUrbReadIso[i])))
++            if ((result = usb_submit_urb(pHw->pUrbReadIso[i],0)))
+             {
+                 adi_dbg (DBG_READ,"Error %d on ISO read URB submit.\n", result);
+                 
+@@ -232,7 +234,7 @@
+         memset(urb, 0, sizeof(*urb));
+         usb_fill_bulk_urb(urb, pHw->usbdev, pHw->pipeBulkDataIn, 
+                           urb->transfer_buffer, INCOMING_DATA_SIZE, ReadBulkCompletion, pHw);
+-        if ((result = usb_submit_urb(urb))) 
++        if ((result = usb_submit_urb(urb,0))) 
+         {
+             adi_dbg (DBG_READ,"Error %d on read URB submit.\n", result);
+             
+@@ -374,10 +376,10 @@
+     for (i=0; i<INCOMING_Q_SIZE; i++)
+     {
+ #ifdef USEBULK
+-	pHw->urbRead[i].transfer_flags &= ~USB_ASYNC_UNLINK;
++	pHw->urbRead[i].transfer_flags &= ~URB_ASYNC_UNLINK;
+         usb_unlink_urb(&pHw->urbRead[i]);
+ #else
+-	pHw->pUrbReadIso[i]->transfer_flags &= ~USB_ASYNC_UNLINK;
++	pHw->pUrbReadIso[i]->transfer_flags &= ~URB_ASYNC_UNLINK;
+         usb_unlink_urb(pHw->pUrbReadIso[i]);
+ #endif
+     }
+@@ -526,7 +528,7 @@
+         pHw->urbWrite.transfer_flags |= USB_QUEUE_BULK;
+         
+         /* Send it: */
+-        result = usb_submit_urb(&pHw->urbWrite);
++        result = usb_submit_urb(&pHw->urbWrite,0);
+     }
+     else
+     {
+@@ -593,7 +595,7 @@
+               -EINVAL.
+             */
+             urb->status = 0;
+-            urb->transfer_flags &= ~USB_ASYNC_UNLINK;
++            urb->transfer_flags &= ~URB_ASYNC_UNLINK;
+ 	}
+ 	else
+ 	{
+--- Sm.c.orig	2003-09-12 14:56:18.000000000 +0200
++++ Sm.c	2003-09-12 14:56:29.000000000 +0200
+@@ -58,6 +58,7 @@
+ /*   Rewrite for MAC OS, 09/2001						    */
+ /*										    */
+ /************************************************************************************/
++#define  USB_ST_NOERROR 0
+ void ModemSM(UInt16 uEventCode, Hardware *pHw, void *pData)
+ {
+     UInt32 DspStatus;
+--- Util.c.niedakh	2003-06-04 00:52:10.000000000 +0200
++++ Util.c	2003-09-12 15:53:46.430349344 +0200
+@@ -29,7 +29,7 @@
+ #include "Konst.h"
+ #include "debug.h"
+ #include "Firmware8051.h"
+-
++#define	USB_ST_NOERROR 0
+ /**********************************************************************************/
+ /* Local utilities								  */
+ /**********************************************************************************/
+@@ -293,7 +293,7 @@
+     pdr = (devrequest *)(xfer_buf+CMV_DATA_WORDS*2);
+ 
+     /*Get an URB and prepare it for submission*/
+-    urb = usb_alloc_urb(0);
++    urb = usb_alloc_urb(0,0);
+ 
+     FILL_USB_CTRL_REQUEST(pdr,
+ 	    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+@@ -332,7 +332,7 @@
+     pdr = (devrequest *)(xfer_buf+CMV_DATA_WORDS*2);
+ 
+     /*Get an URB and prepare it for submission*/
+-    urb = usb_alloc_urb(0);
++    urb = usb_alloc_urb(0,0);
+ 
+     FILL_USB_CTRL_REQUEST(pdr,
+ 	    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+@@ -484,7 +484,7 @@
+     if ( list_was_empty ) 
+     {
+         adi_dbg(DBG_UTILS,"Submit urb %p immediately\n", urb);
+-        ret = usb_submit_urb (urb);
++        ret = usb_submit_urb (urb,0);
+         if ( ret != 0 ) 
+         {
+             adi_err ("Failed to send ctrl urb (%p) with err=%d\n",
+@@ -662,7 +662,7 @@
+         adi_dbg(DBG_UTILS,"rm_queued_urb: Submitting urb %p\n",qhead->urb);
+         
+ 
+-        ret = usb_submit_urb ( qhead->urb );
++        ret = usb_submit_urb ( qhead->urb , 0);
+         if ( ret != 0 ) 
+         {
+             adi_err ("Failed to send pending ctrl urb (%p) with err=%d\n",
+@@ -726,7 +726,7 @@
+     }
+     
+     
+-    ret = usb_submit_urb (pHw->ctrl_urb_failed);
++    ret = usb_submit_urb (pHw->ctrl_urb_failed,0);
+     if ( ret != 0 ) 
+     {
+         adi_err ("ADI: Failed to send faulty ctrl urb (%p) with err=%d\n",
+@@ -777,7 +777,7 @@
+         /* We have to unlink it */
+         qhead = list_entry ( pHw->ctrl_urb_ipg_q.next, queued_urb_t, list);
+         
+-        qhead->urb->transfer_flags &= ~USB_ASYNC_UNLINK;
++        qhead->urb->transfer_flags &= ~URB_ASYNC_UNLINK;
+         usb_unlink_urb(qhead->urb);
+     }
+     
+--- user/Makefile.orig	2003-09-13 20:44:11.207726216 +0200
++++ user/Makefile	2003-09-13 21:21:04.834203840 +0200
+@@ -4,7 +4,7 @@
+ # Makefile for adictrl
+ #
+ 
+-CFLAGS=-O2 -pipe -Wall -pedantic -DLINUX -g
++CFLAGS=-O2 -I../../kern-fixed  -DLINUX -Wall 
+ INSTALLDIR=/usr/sbin
+ CONFIGDIR=/etc/analog
+ INSTALLER = $(shell which install)
+--- user/adictrl.c.orig	2003-09-13 21:06:07.408633264 +0200
++++ user/adictrl.c	2003-09-13 21:23:39.022763616 +0200
+@@ -31,9 +31,9 @@
+ #include <unistd.h>
+ #include <dirent.h>
+ #include <fcntl.h>
+-#include <linux/usb.h>
++#include "usb.h"
+ #include <getopt.h>
+-#include <linux/usbdevice_fs.h>
++#include "usbdevice_fs.h"
+ #include <signal.h>
+ #include <assert.h>
+ 
+@@ -179,7 +179,7 @@
+  * @bNumConfigurations
+  *
+  */
+-
++/*
+ typedef struct usb_device_descriptor 
+ {
+     uint8_t  bLength;
+@@ -197,7 +197,8 @@
+     uint8_t  iSerialNumber;
+     uint8_t  bNumConfigurations;
+ } __attribute__((packed)) usb_dev_desc_t;
+-
++*/
++typedef struct usb_device_descriptor __attribute__((packed)) usb_dev_desc_t;
+ /**
+  * cmv_msg_t - CMV message description.
+  *   Copied and adapted from Struct.sh in order to not enter
