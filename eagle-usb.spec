@@ -13,7 +13,6 @@ License:	GPL
 Group:		Base/Kernel
 Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
-Source2:    %{name}.init
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-firmware.patch
 URL:		http://fast800.tuxfamily.org/
@@ -22,7 +21,6 @@ BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 Requires(post,postun):	/sbin/depmod
 Requires(post,postun):	/sbin/update-usb.usermap
-Requires(post,postun):	/sbin/chkconfig
 Requires:	ppp >= 2.4.1
 Requires:	hotplug
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -97,7 +95,7 @@ install driver/adiusbadsl.o kernel-smp/
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb
-install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp,rc.d/init.d}
+install -d $RPM_BUILD_ROOT/etc/{analog,hotplug,ppp}
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/%{name}}
 
 install kernel-up/*.o $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/usb
@@ -125,29 +123,14 @@ n
 	PPPDIR=/etc/ppp \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install %{SOURCE2}  $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}	
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 [ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
-/sbin/chkconfig --add %{name}
-if [ -f /var/lock/subsys/%{name} ]; then
-    /etc/rc.d/init.d/%{name} restart 1>&2
-    else
-        echo \
-        "Run \"/etc/rc.d/init.d/%{name} start\" to start internet connection."
-fi
 
 %postun
 [ -x /sbin/update-usb.usermap ] && /sbin/update-usb.usermap
-if [ "$1" = "0" ]; then
-    if [ -f /var/lock/subsys/%{name} ]; then
-        /etc/rc.d/init.d/%{name} stop 1>&2
-    fi
-    /sbin/chkconfig --del %{name}
-fi
 
 %post -n kernel-usb-%{_orig_name}
 %depmod %{_kernel_ver}
@@ -176,7 +159,6 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
-%attr(754,root,root) /etc/rc.d/init.d/%{name}
 
 %files -n kernel-usb-%{_orig_name}
 %defattr(644,root,root,755)
