@@ -14,7 +14,7 @@ License:	GPL
 Group:		Base/Kernel
 Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
-Source1:	%{name}-fixed_headers.tar.bz2
+Source1:	http://www.kernel.pl/~djurban/pld/%{name}-fixed_headers.tar.bz2
 # Source1-md5:	d2fdf1fd3e651c1e4c856ff5af046c3f
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-firmware.patch
