@@ -12,18 +12,16 @@
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
-Version:	1.9.6
-%define		_rel	0.6
+Version:	1.9.8
+%define		_rel	0.1
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
 Source0:	http://download.gna.org/eagleusb/%{name}-%{version}.tar.bz2
-# Source0-md5:	d2d94f396132e34417fa1b26bcde7287
-Patch0:		%{name}-eu_main.patch
+# Source0-md5:	2545f60f436a511039456b385a5987b0
 Patch1:		%{name}-eu_types.patch
-Patch2:		%{name}-ppc.patch
-Patch3:		%{name}-vpivci-info.patch
-Patch4:		%{name}-wait.patch
+Patch2:		%{name}-vpivci-info.patch
+Patch3:		%{name}-opt.patch
 URL:		http://gna.org/projects/eagleusb/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
@@ -79,11 +77,9 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 
 %prep
 %setup -q
-%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p0
 
 %ifnarch %{ix86}
 # invalid not only for ppc
@@ -118,13 +114,14 @@ cd -
 %if %{with userspace}
 %{__aclocal} -I .
 %{__autoconf}
-%configure
+%configure \
+	--with-dsp-dir=%{_datadir}/misc
 %{__make} -C driver/firmware \
-	CFLAGS="%{rpmcflags}"
+	OPT="%{rpmcflags}"
 %{__make} -C driver/user \
-	CFLAGS="%{rpmcflags} -DBIN_DIR=\"\\\"%{_datadir}/misc\\\"\" -DCONF_DIR=\"\\\"%{_sysconfdir}/eagle-usb\\\"\""
+	OPT="%{rpmcflags}"
 %{__make} -C pppoa \
-	CFLAGS="%{rpmcflags}"
+	OPT="%{rpmcflags}"
 %endif
 
 %install
