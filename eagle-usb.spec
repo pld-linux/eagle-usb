@@ -1,7 +1,6 @@
 #
 # TODO:
-#		- fix %%install, %%files
-#		- add utils/scripts, eagleconfig
+#		- utils/scripts, eagleconfig
 #
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
@@ -150,6 +149,18 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{analog,hotplug,ppp} \
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post -n kernel-usb-eagle
+%depmod %{_kernel_ver}
+
+%postun -n kernel-usb-eagle
+%depmod %{_kernel_ver}
+
+%post -n kernel-smp-usb-eagle
+%depmod %{_kernel_ver}
+
+%postun -n kernel-smp-usb-eagle
+%depmod %{_kernel_ver}
 
 %if %{with userspace}
 %files
