@@ -23,7 +23,6 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires: kernel-module-build >= 2.6}
-%{?with_dist_kernel:BuildRequires: kernel-source >= 2.6}
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 %endif
@@ -78,10 +77,13 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 
 %configure
 %if %{with userspace}
-# TODO: optflags!!!
-%{__make} -C pppoa
-%{__make} -C driver/firmware
-%{__make} -C driver/user
+%{__make} -C pppoa \
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags} -Wall -ansi -pedantic \$(DEFINES) \$(PATHS)"
+%{__make} -C driver/firmware \
+	CFLAGS="%{rpmcflags} -pipe -Wall -pedantic"
+%{__make} -C driver/user \
+	CFLAGS="%{rpmcflags} -Wall -DLINUX -DCONF_DIR=\"%{_sysconfdir}/eagle-usb\" -DBIN_DIR=\"\$(EAGLEUSB_BINDIR)\""
 %endif
 
 %if %{with kernel}
