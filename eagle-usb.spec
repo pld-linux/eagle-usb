@@ -23,6 +23,7 @@ Patch0:		%{name}-eu_main.patch
 Patch1:		%{name}-eu_types.patch
 Patch2:		%{name}-ppc.patch
 Patch3:		%{name}-vpivci-info.patch
+Patch4:		%{name}-wait.patch
 URL:		http://gna.org/projects/eagleusb/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
@@ -82,6 +83,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc
