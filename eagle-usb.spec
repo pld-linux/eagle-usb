@@ -9,7 +9,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle
 Version:	1.9.0
-Release:	0.%{_snap}.1
+Release:	0.%{_snap}.2
 License:	GPL
 Group:		Base/Kernel
 #Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
@@ -71,15 +71,17 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %{__aclocal} -I .
 %{__autoconf}
 
-%configure --with-eagle-usb-bindir=%{_datadir}/misc/
+%configure --with-eagle-usb-bindir=%{_datadir}/misc
+
 
 if [ -z "$TMP" ]; then TMP="/tmp"; fi
-if [ -d "$TMP/linux" ]; then rm -rf "$TMP/linux/*" else mkdir "$TMP/linux"; fi
+if [ -d "$TMP/linux" ]; then rm -rf "$TMP/linux/*"; else mkdir "$TMP/linux"; fi
 
 cp -rdp /usr/src/linux-2.6.0 $TMP/linux
 (cd $TMP/linux; make mrproper)
 cp /usr/src/linux/config-up $TMP/linux/.config
-%{__make} KERNELSRC="$TMP/linux" 
+%{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
+	  EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
 mv driver/eagle-usb.ko driver/eagle-usb.up
 
 # There should be a way to build smp too, but noidea how.
