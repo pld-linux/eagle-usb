@@ -74,7 +74,9 @@ make -C pppoa; make -C driver/firmware; make -C driver/user
 
 cd driver
 ln -sf %{_kernelsrcdir}/config-up .config
-
+install -d include/linux
+ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
+ln -sf %{_kernelsrcdir}/include/linux/autoconf.h include/linux/autoconf.h
 %{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
 mv eagle-usb.ko eagle-usb.ko-done
 
