@@ -1,0 +1,12 @@
+diff -urN eagle-usb-1.9.9.1.org/pppoa/pppoa.c eagle-usb-1.9.9.1/pppoa/pppoa.c
+--- eagle-usb-1.9.9.1.org/pppoa/pppoa.c	2004-08-26 22:47:54.000000000 +0200
++++ eagle-usb-1.9.9.1/pppoa/pppoa.c	2004-11-25 16:58:45.505353135 +0100
+@@ -193,7 +193,7 @@
+     InitPPP();
+ 
+     /* Set-up signal handlers: */
+-    signal(SIGTERM, SIG_IGN);
++    signal(SIGTERM, sigEndSession);
+     signal(SIGINT, SIG_IGN);
+     signal(SIGHUP, sigEndSession);
+ 
