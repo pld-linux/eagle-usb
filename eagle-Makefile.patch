@@ -15,20 +15,3 @@
  
  #define ISDN_BIN_FILE    "dsp_code_isdn.bin"
  #define POTS_BIN_FILE    "dsp_code_pots.bin"
---- eagle-usb.org/configure.in	2004-01-13 23:10:20.000000000 +0100
-+++ eagle-usb/configure.in	2004-02-04 15:35:29.078214816 +0100
-@@ -207,10 +207,10 @@
- 
- # ===== display warning(s) =====
- echo
--if test "${KERNELVER}" = "none" ; then
--	echo -e ${KERNEL_SRC_MISSING_MSG}
--	exit 1
--fi
-+#if test "${KERNELVER}" = "none" ; then
-+#	echo -e ${KERNEL_SRC_MISSING_MSG}
-+#	exit 1
-+#fi
- CURKERNELVER="`uname -r`"
- if test "${KERNELVER}" != "${CURKERNELVER}" ; then
- 	echo -e ${KERNEL_SRC_DIFF_MSG}
