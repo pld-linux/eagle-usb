@@ -1,7 +1,7 @@
 #
 # TODO:
 #		- fix %%install, %%files
-#		- add utils/scripts, eagleconfig, firmware
+#		- add utils/scripts, eagleconfig
 #
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
@@ -144,11 +144,10 @@ install utils/scripts/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 	INSTALL=install \
 	EU_DSP_DIR=$RPM_BUILD_ROOT%{_datadir}/misc
 
-%{__make} -C driver/user install \
-	INSTALL=install \
-	SBINDIR=$RPM_BUILD_ROOT%{_sbindir} \
-	EU_SCRIPT_DIR=$RPM_BUILD_ROOT%{_sysconfdir}/analog
-
+install driver/user/{eaglectrl,eaglestat} \
+	$RPM_BUILD_ROOT%{_sbindir}
+install driver/user/{*.conf,*.txt} \
+	$RPM_BUILD_ROOT%{_sysconfdir}/analog
 install pppoa/pppoa \
 	$RPM_BUILD_ROOT%{_sbindir}
 
@@ -207,9 +206,8 @@ fi
 %defattr(644,root,root,755)
 %doc README
 %dir %{_sysconfdir}/analog
-#%%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/adiusbadsl.conf
-#%%{_sysconfdir}/analog/CMV*
-%{_sysconfdir}/analog/eagle-usb.conf*
+%{_sysconfdir}/analog/CMV*.txt
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/*.conf
 #%%attr(755,root,root) %{_sysconfdir}/hotplug/usb/*
 %{_libdir}/hotplug/eagle
 #%%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
