@@ -1,24 +1,21 @@
-#
-# Conditional build:
-# _without_dist_kernel          without distribution kernel
-#
-
-%define		_snap	031218
+%bcond_without	dist_kernel
+%bcond_without	smp
+%define		_snap	040113
 %define		_orig_name	eagle
 %define		no_install_post_compress_modules 1
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle
-Version:	1.9.0
+Version:	1.9.3
 Release:	0.%{_snap}.3
 License:	GPL
 Group:		Base/Kernel
 #Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
-Source0:	http://www.kernel.pl/~djurban/pld/%{name}-usb.tar.bz2
-# Source0-md5:	bbf3d9e484643101b0349d3629958259	
+Source0:	http://ep09.pld-linux.org/~djurban/pld/%{name}-usb-%{_snap}.tar.bz2
+# Source0-md5:	2d15ce31e185042b4971733b8b345a88	
 Patch0:		%{name}-Makefile.patch
 URL:		http://fast800.tuxfamily.org/
-%{!?_without_dist_kernel:BuildRequires:	kernel-headers }
+%{?with_dist_kernel:BuildRequires: kernel-headers }
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 Requires(post,postun):	/sbin/depmod
@@ -37,7 +34,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Release:	%{_snap}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{!?_without_dist_kernel:%requires_releq_kernel_up}
+%{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 
 
@@ -53,7 +50,7 @@ Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800...)
 Release:	%{_snap}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{!?_without_dist_kernel:%requires_releq_kernel_smp}
+%{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 
 
@@ -72,15 +69,17 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %{__aclocal} -I .
 %{__autoconf}
 
-%configure --with-eagle-usb-bindir=%{_datadir}/misc
+%configure 
 
 
 if [ -z "$TMP" ]; then TMP="/tmp"; fi
 if [ -d "$TMP/linux" ]; then rm -rf "$TMP/linux/*"; else mkdir "$TMP/linux"; fi
 
-cp -rdp /usr/src/linux-2.6.0 $TMP/linux
+cp -rdp /usr/src/linux/* $TMP/linux/
 (cd $TMP/linux; make mrproper)
-cp /usr/src/linux/config-up $TMP/linux/.config
+%{?with_dist_kernel:cp /usr/src/linux/config-up $TMP/linux/.config}
+%{!?with_dist_kernel:cp /usr/src/linux/.config $TMP/linux/.config}
+
 %{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
 	  EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
 mv driver/eagle-usb.ko driver/eagle-usb.up
@@ -89,7 +88,9 @@ mv driver/eagle-usb.ko driver/eagle-usb.up
 %if %{with smp}
 (cd $TMP/linux; make mrproper)
 %{__make} clean
-cp /usr/src/linux/config-smp $TMP/linux/.config
+%{?with_dist_kernel:cp /usr/src/linux/config-smp $TMP/linux/.config}
+%{!?with_dist_kernel:cp /usr/src/linux/.config $TMP/linux/.config}
+
 %{__make} KERNELSRC="$TMP/linux" EAGLEUSB_BINDIR="%{_datadir}/misc" \
 	EAGLEUSB_CONFDIR="%{_sysconfdir}/eagle-usb"
 %endif
