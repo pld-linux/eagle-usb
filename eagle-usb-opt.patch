@@ -1,0 +1,36 @@
+diff -urN eagle-usb-1.9.8.org/driver/firmware/Makefile eagle-usb-1.9.8/driver/firmware/Makefile
+--- eagle-usb-1.9.8.org/driver/firmware/Makefile	2004-07-02 20:22:52.314722592 +0200
++++ eagle-usb-1.9.8/driver/firmware/Makefile	2004-07-02 22:07:44.682137344 +0200
+@@ -13,7 +13,7 @@
+ 
+ -include ../../Makefile.common
+ 
+-CFLAGS=-O2 -pipe -Wall -pedantic
++CFLAGS=$(OPT) -pipe -Wall -pedantic
+ 
+ POTS_DIR=sagem/pots
+ ISDN_DIR=sagem/isdn
+diff -urN eagle-usb-1.9.8.org/driver/user/Makefile eagle-usb-1.9.8/driver/user/Makefile
+--- eagle-usb-1.9.8.org/driver/user/Makefile	2004-07-02 20:22:52.247732776 +0200
++++ eagle-usb-1.9.8/driver/user/Makefile	2004-07-02 22:08:09.560355280 +0200
+@@ -9,7 +9,7 @@
+ VERSION=$(shell cat ../../VERSION)
+ 
+ 
+-CFLAGS=-O2 -pipe -Wall -pedantic -DLINUX -g -DCONF_DIR="\"$(EU_DIR)\"" -DBIN_DIR="\"$(EU_DSP_DIR)\"" '-DEAGLEUSBVERSION="$(VERSION)"'
++CFLAGS=$(OPT) -pipe -Wall -pedantic -DLINUX -g -DCONF_DIR="\"$(EU_DIR)\"" -DBIN_DIR="\"$(EU_DSP_DIR)\"" '-DEAGLEUSBVERSION="$(VERSION)"'
+ 
+ all: eaglectrl
+ 
+diff -urN eagle-usb-1.9.8.org/pppoa/Makefile eagle-usb-1.9.8/pppoa/Makefile
+--- eagle-usb-1.9.8.org/pppoa/Makefile	2004-07-02 20:22:52.126751168 +0200
++++ eagle-usb-1.9.8/pppoa/Makefile	2004-07-02 22:08:30.467176960 +0200
+@@ -18,7 +18,7 @@
+ # Program paths
+ #PPPOA_PATH=$(SBINDIR)/pppoa
+ #PATHS='-DPPPOA_PATH="$(PPPOA_PATH)"' '-DPPPD_PATH="$(PPPD_PATH)"'
+-CFLAGS= -O2 -Wall -Wstrict-prototypes -ansi -pedantic $(DEFINES) $(PATHS)
++CFLAGS=$(OPT) -Wall -Wstrict-prototypes -ansi -pedantic $(DEFINES) $(PATHS)
+ 
+ all: pppoa
+ 
