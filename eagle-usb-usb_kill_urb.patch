@@ -1,0 +1,38 @@
+diff -urN eagle-usb-2.0.0.orig/driver/eu_main.c eagle-usb-2.0.0.patch/driver/eu_main.c
+--- eagle-usb-2.0.0.orig/driver/eu_main.c	2004-11-07 10:06:55.000000000 +0100
++++ eagle-usb-2.0.0.patch/driver/eu_main.c	2005-01-19 23:49:41.830723128 +0100
+@@ -953,7 +953,7 @@
+     {
+         eu_dbg (DBG_INIT,"Stop interrupt URB\n");
+         ins->urb_int->transfer_flags &= ~URB_ASYNC_UNLINK;
+-        usb_unlink_urb(ins->urb_int);
++        usb_kill_urb(ins->urb_int);
+         usb_free_urb (ins->urb_int);
+         EU_CLEAR_FLAG (ins, EU_HAS_INT);
+     }
+@@ -1048,7 +1048,7 @@
+         if ( ins->read_urb[i] ) 
+         {
+             ins->read_urb[i]->transfer_flags &= ~URB_ASYNC_UNLINK;
+-            usb_unlink_urb ( ins->read_urb[i] );
++            usb_kill_urb ( ins->read_urb[i] );
+             usb_free_urb ( ins->read_urb[i] );
+             ins->read_urb[i] = NULL;
+         }
+@@ -1070,14 +1070,14 @@
+      * Free write urb: it has been unlinked in eu_eth_close
+      */
+     ins->urb_write->transfer_flags &= ~URB_ASYNC_UNLINK;
+-    usb_unlink_urb ( ins->urb_write );
++    usb_kill_urb ( ins->urb_write );
+     usb_free_urb ( ins->urb_write );
+ 
+     /*
+      * Free urb_oam_write
+      */
+     ins->urb_oam_write->transfer_flags &= ~URB_ASYNC_UNLINK;
+-    usb_unlink_urb(ins->urb_oam_write);
++    usb_kill_urb(ins->urb_oam_write);
+     usb_free_urb ( ins->urb_oam_write );
+     
+ 
