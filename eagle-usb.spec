@@ -15,7 +15,6 @@ Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-firmware.patch
-Patch2:		%{name}-stopadsl.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
 BuildRequires:	%{kgcc_package}
@@ -69,7 +68,6 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 install -d kernel-{up,smp}
