@@ -1,7 +1,7 @@
 #
 # TODO:
 #		- fix %%install, %%files
-#		- add utils/scripts, eagleconfig
+#		- add utils/scripts, eagleconfig, firmware
 #
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
@@ -28,7 +28,7 @@ Source0:	http://download.gna.org/eagleusb/%{name}-%{version}.tar.bz2
 #Patch3:		%{name}-info_about_VPI_VCI.patch
 Patch4:		%{name}-eu_main.patch
 Patch5:		%{name}-eu_types.patch
-URL:		http://gna.org/projects/eagleusb
+URL:		http://gna.org/projects/eagleusb/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.153
@@ -205,7 +205,7 @@ fi
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc BUGS Changelog FAQ TODO readme.txt
+%doc README
 %dir %{_sysconfdir}/analog
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/adiusbadsl.conf
 %{_sysconfdir}/analog/CMV*
@@ -219,11 +219,11 @@ fi
 %if %{with kernel}
 %files -n kernel-usb-eagle
 %defattr(644,root,root,755)
-%doc readme.txt
-/lib/modules/%{_kernel_ver}/kernel/drivers/usb/*
+/lib/modules/%{_kernel_ver}/kernel/drivers/usb/*.ko*
 
+%if %{with smp} && %{with dist_kernel}
 %files -n kernel-smp-usb-eagle
 %defattr(644,root,root,755)
-%doc readme.txt
-/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*
+/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/*.ko*
+%endif
 %endif
