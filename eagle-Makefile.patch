@@ -35,3 +35,41 @@
  
  uninstall:
  	rm -f $(EAGLEUSB_BINDIR)/dsp_code_pots.bin $(EAGLEUSB_BINDIR)/dsp_code_isdn.bin
+--- eagle-usb/configure.in~	2003-12-13 17:48:16.000000000 +0100
++++ eagle-usb/configure.in	2003-12-13 18:02:10.147697088 +0100
+@@ -40,7 +40,7 @@
+ AC_ARG_WITH(lang,
+ [  --with-lang=LL             Language (en/de/es/fr/it/pl)],
+ EU_LANG=${withval},
+-EU_LANG=${LANGUAGE:0:2}
++EU_LANG=${LANGUAGE}
+ )
+ if test -z "${EU_LANG}" ; then
+ 	EU_LANG="en"
+--- eagle-usb/utils/scripts/Makefile.orig	2003-12-15 16:33:08.582485448 +0100
++++ eagle-usb/utils/scripts/Makefile	2003-12-15 16:35:59.179550752 +0100
+@@ -59,7 +59,6 @@
+ 	$(INSTALL) -m 0755 -o root -g root tmp/eu_init $(EU_SCRIPT_DIR) && \
+ 	$(INSTALL) -m 0644 -o root -g root usb.usermap $(EU_SCRIPT_DIR) && \
+ 	$(INSTALL) -m 0644 -o root -g root options $(EU_SCRIPT_DIR) && \
+-	cp -R lang/* $(EU_LANG_DIR) && \
+ 	rm -Rf $(EU_LANG_DIR)/CVS && \
+ 	touch $(EU_SCRIPT_DIR)/lock
+ #	eagle-usb.conf => installé par ~/driver/user/Makefile
+--- eagle-usb/configure.in.orig	2003-12-19 15:11:37.000000000 +0100
++++ eagle-usb/configure.in	2003-12-19 15:15:39.000000000 +0100
+@@ -36,6 +36,14 @@
+ EAGLEUSB_CONFDIR=${CONFDIR}/eagle-usb
+ )
+ 
++# ===== arg: eagle-usb-confdir =====
++AC_ARG_WITH(eagle-usb-bindir,
++[  --with-eagle-usb-bindir   Path to EAGLE USB configuration files ($DATADIR/eagle-usb) ],
++EAGLEUSB_CONFDIR=${withval},
++EAGLEUSB_CONFDIR=${DATADIR}/eagle-usb
++)
++
++
+ # ===== arg: language =====
+ AC_ARG_WITH(lang,
+ [  --with-lang=LL             Language (en/de/es/fr/it/pl)],
