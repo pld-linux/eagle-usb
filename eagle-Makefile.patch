@@ -138,3 +138,72 @@ diff -uNr eagle-1.0.4.orig/scripts/Makefile eagle-1.0.4/scripts/Makefile
  
  echo -en $DEGROUPEMSG
  read REP
+--- eagle-1.0.4/driver/Makefile.orig	2003-09-11 18:03:04.803605024 +0200
++++ eagle-1.0.4/driver/Makefile	2003-09-11 18:03:54.224091968 +0200
+@@ -59,7 +59,7 @@
+ CFLAGS = -DLINUX -D__KERNEL__ -DMODULE -I$(KERNELSRC)/include \
+ 	 '-DADIDRIVERVERSION="$(VERSION)"' -Wall \
+           -Wstrict-prototypes -fomit-frame-pointer \
+-	  -fno-strict-aliasing -pipe 
++	  -fno-strict-aliasing -pipe $(NEWFLAGS)
+ 
+ ifneq ($(MACHINE),ppc)
+ CFLAGS += -mpreferred-stack-boundary=2
+
+--- eagle-1.0.4/driver/Makefile	2003-09-18 14:42:54.135248496 +0200
++++ eagle-1.0.4.zmian/driver/Makefile	2003-09-18 14:25:29.679029976 +0200
+@@ -83,8 +83,9 @@
+ CFLAGS  += -O2
+ endif
+ 
+-OBJS = AdiUsbAdslDriver.o \
+-       Boot.o  \
++EXTRA_CFLAGS=$(CFLAGS)
++
++module-objs := Boot.o  \
+        Util.o  \
+        Pipes.o \
+        Me.o    \
+@@ -96,11 +97,14 @@
+        Sar.o   \
+        Crc.o   \
+        Oam.o  
++obj-m += AdiUsbAdslDriver.o
+ 
+ #---------------------------------------------------------------------------
+ # Targets
+ #---------------------------------------------------------------------------
+ 
++KBUILD_PARAMS := -C $(KERNELSRC) SUBDIRS=`pwd`
++
+ all: driver binaryfirmware adiuser
+ 
+ install: driver installfirmware installuser
+@@ -134,9 +138,13 @@
+ installfirmware : binaryfirmware
+ 	$(MAKE) -C $(FIRMWARE) install
+ 
+-$(MODULE).o: $(OBJS)
+-	$(LD) -r -o $(MODULE).o $(OBJS)
+-
++$(MODULE).o: 
++	$(MAKE) $(KBUILD_PARAMS) modules;
++	if ! [ -f AdiUsbAdslDriver.ko ]; then \
++	echo "AdiUsbAdslDriver.ko failed to build!"; \
++	exit 1; \
++	fi		    
++	
+ checkdep:
+ 	@if [ ! -f .depend ]; then make dep ; exit 0; fi
+ 
+--- eagle-1.0.4/driver/user/Makefile.orig	2003-09-27 12:16:40.085692624 +0200
++++ eagle-1.0.4/driver/user/Makefile	2003-09-27 12:17:50.535982552 +0200
+@@ -4,7 +4,7 @@
+ # Makefile for adictrl
+ #
+ 
+-CFLAGS=-O2 -pipe -Wall -pedantic -DLINUX -g
++CFLAGS=-O2 -I$(KERNELSRC)/include -I../../kern-fixed  -DLINUX -Wall 
+ INSTALLDIR=/usr/sbin
+ CONFIGDIR=/etc/analog
+ INSTALLER = $(shell which install)

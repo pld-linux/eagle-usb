@@ -308,17 +308,6 @@
          usb_unlink_urb(qhead->urb);
      }
      
---- user/Makefile.orig	2003-09-13 20:44:11.207726216 +0200
-+++ user/Makefile	2003-09-13 21:21:04.834203840 +0200
-@@ -4,7 +4,7 @@
- # Makefile for adictrl
- #
- 
--CFLAGS=-O2 -pipe -Wall -pedantic -DLINUX -g
-+CFLAGS=-O2 -I../../kern-fixed  -DLINUX -Wall 
- INSTALLDIR=/usr/sbin
- CONFIGDIR=/etc/analog
- INSTALLER = $(shell which install)
 --- user/adictrl.c.orig	2003-09-13 21:06:07.408633264 +0200
 +++ user/adictrl.c	2003-09-13 21:23:39.022763616 +0200
 @@ -31,9 +31,9 @@
