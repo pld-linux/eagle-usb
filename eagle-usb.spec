@@ -10,7 +10,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle-usb
 Version:	1.0.4
-%define	_rel	7
+%define	_rel	8
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
@@ -29,7 +29,6 @@ Requires:	ppp >= 2.4.1
 %{?with_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
 Obsoletes:	eagle-utils
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
 
 %description
 Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems.
@@ -75,6 +74,12 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch1 -p1
 %patch2 -p1
 
+%ifnarch %{ix86}
+# invalid not only for ppc
+sed -e 's/-mpreferred-stack-boundary=2//' driver/Makefile > m.tmp
+mv -f m.tmp driver/Makefile
+%endif
+
 %build
 %if %{with kernel}
 install -d kernel-{up,smp}
@@ -83,9 +88,6 @@ install -d kernel-{up,smp}
 %{__make} clean
 %{__make} -C driver \
 	CC=%{kgcc} \
-%ifarch %{ix86} 
-	OPT="-I/usr/src/linux/include/asm-i386/mach-default" \
-%endif
 	KERNELSRC="%{_kernelsrcdir}"
 install driver/adiusbadsl.o kernel-up
 
@@ -94,11 +96,7 @@ CONFIG_SMP=y; export CONFIG_SMP
 %{__make} -C driver clean
 %{__make} -C driver \
 	CC=%{kgcc} \
-%ifarch %{ix86} 
-	OPT="-I/usr/src/linux/include/asm-i386/mach-default -DSMP -D__SMP__" \
-%else
-	OPT="-D__SMP__ -DSMP" \
-%endif
+	CONFIG_SMP=1 \
 	KERNELSRC="%{_kernelsrcdir}"
 install driver/adiusbadsl.o kernel-smp
 %endif
