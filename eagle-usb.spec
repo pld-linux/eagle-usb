@@ -163,10 +163,10 @@ rm -rf $RPM_BUILD_ROOT
 %depmod %{_kernel_ver}
 
 %post -n kernel-smp-usb-eagle
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver}smp
 
 %postun -n kernel-smp-usb-eagle
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver}smp
 
 %if %{with userspace}
 %files
