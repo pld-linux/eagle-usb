@@ -1,14 +1,16 @@
 --- eagle-usb-1.9.6/driver/eu_main.c.orig	2004-02-22 22:11:30.000000000 +0100
-+++ eagle-usb-1.9.6/driver/eu_main.c	2004-05-31 01:02:15.443359432 +0200
++++ eagle-usb-1.9.6/driver/eu_main.c	2004-06-01 02:11:45.880205928 +0200
 @@ -476,11 +476,8 @@
      eu_enters (DBG_INIT);
  
  #ifdef LINUX_2_6
 -        if ( intf->driver != NULL )
 -        {
-             ins = usb_get_intfdata ( intf );
-             goto byebye;
+-            ins = usb_get_intfdata ( intf );
+-            goto byebye;
 -        }
++    if ( ( ins = usb_get_intfdata ( intf ) ) != NULL )
++	goto byebye;
  #endif
          
      /*
