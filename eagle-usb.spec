@@ -23,6 +23,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires: kernel-module-build >= 2.6}
+%{?with_dist_kernel:BuildRequires: kernel-source >= 2.6}
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 %endif
