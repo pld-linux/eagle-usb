@@ -13,7 +13,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) mod
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
 Version:	1.9.6
-%define		_rel	0.5
+%define		_rel	0.6
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
@@ -22,6 +22,7 @@ Source0:	http://download.gna.org/eagleusb/%{name}-%{version}.tar.bz2
 Patch0:		%{name}-eu_main.patch
 Patch1:		%{name}-eu_types.patch
 Patch2:		%{name}-ppc.patch
+Patch3:		%{name}-vpivci-info.patch
 URL:		http://gna.org/projects/eagleusb/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
@@ -80,6 +81,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc
@@ -143,6 +145,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{analog,hotplug,ppp} \
 %{__make} -C driver/user install \
 	EU_SCRIPT_DIR=$RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb \
 	SBINDIR=$RPM_BUILD_ROOT%{_sbindir}
+mv $RPM_BUILD_ROOT%{_sysconfdir}/eagle-usb/eagle-usb.conf{.template,}
 %{__make} -C pppoa install \
 	SBINDIR=$RPM_BUILD_ROOT%{_sbindir}
 %endif
@@ -166,7 +169,8 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc README
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb
+%dir %{_sysconfdir}/eagle-usb
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/eagle-usb.conf
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
 %endif
