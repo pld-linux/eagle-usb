@@ -19,6 +19,7 @@ Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/eagle-%{version}.tar.gz
 Patch0:		eagle-Makefile.patch
 Patch1:		eagle-firmware.patch
 Patch2:		%{name}-user2.6.patch
+Patch3:		%{name}-info_about_VPI_VCI.patch
 URL:		http://fast800.tuxfamily.org/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-headers < 2.5}
@@ -73,6 +74,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc
