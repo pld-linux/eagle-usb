@@ -1,209 +1,37 @@
-diff -uNr eagle-1.0.4.orig/driver/Makefile eagle-1.0.4/driver/Makefile
---- eagle-1.0.4.orig/driver/Makefile	Wed Jun 18 23:58:41 2003
-+++ eagle-1.0.4/driver/Makefile	Wed Jul  9 19:41:39 2003
-@@ -106,7 +106,7 @@
- install: driver installfirmware installuser
- 	mkdir -p $(INSTALLDIR) && \
- 	mkdir -p $(CONFDIR)    && \
--	$(INSTALLER) -m 0664 -o root -g root $(MODULE).o $(INSTALLDIR)/$(MODULE).o && \
-+	$(INSTALLER) $(MODULE).o $(DESTDIR)/$(INSTALLDIR)/$(MODULE).o && \
- 	/sbin/depmod -a
- 
- uninstall:
-diff -uNr eagle-1.0.4.orig/driver/firmware/Makefile eagle-1.0.4/driver/firmware/Makefile
---- eagle-1.0.4.orig/driver/firmware/Makefile	Wed Jun  4 01:09:37 2003
-+++ eagle-1.0.4/driver/firmware/Makefile	Wed Jul  9 19:42:20 2003
-@@ -33,12 +33,12 @@
- 	gcc $(CFLAGS) builddsp.c -o buildDSP
- 
- install : firmware.bin DSPcode.bin
--	mkdir -p $(CONFIGDIR)
--	$(INSTALLER) -c -m 0664 -o root -g root *.bin $(CONFIGDIR)
-+	mkdir -p $(DESTDIR)/$(CONFIGDIR)
-+	$(INSTALLER)  *.bin $(DESTDIR)/$(CONFIGDIR)
- 
- uninstall:
--	rm -f  $(CONFIGDIR)/DSPcode.bin
--	rm -f $(CONFIGDIR)/firmware.bin
-+	rm -f $(DESTDIR)/$(CONFIGDIR)/DSPcode.bin
-+	rm -f $(DESTDIR)/$(CONFIGDIR)/firmware.bin
- 
- clean :
- 	rm -f firmware.bin buildFirmware buildDSP DSPcode.bin
-diff -uNr eagle-1.0.4.orig/driver/user/Makefile eagle-1.0.4/driver/user/Makefile
---- eagle-1.0.4.orig/driver/user/Makefile	Wed Jun  4 00:40:37 2003
-+++ eagle-1.0.4/driver/user/Makefile	Wed Jul  9 19:40:18 2003
-@@ -15,19 +15,19 @@
- 	gcc $(CFLAGS) adictrl.c -o adictrl
- 
- install : adictrl sagemf800.conf
--	mkdir -p $(CONFIGDIR)
--	$(INSTALLER) -c -m 0755 -o root -g root adictrl $(INSTALLDIR)
--	$(INSTALLER) -c -m 0755 -o root -g root showstat $(INSTALLDIR)
--	$(INSTALLER) -c -m 0755 -o root -g root sagemf800.conf $(CONFIGDIR)/adiusbadsl.conf
--#	$(INSTALLER) -c -m 0755 -o root -g root CMVep.txt $(CONFIGDIR)/
--#	$(INSTALLER) -c -m 0755 -o root -g root CMVei.txt $(CONFIGDIR)/
-+	$(INSTALLER) -d $(DESTDIR)/$(CONFIGDIR)
-+	$(INSTALLER) adictrl $(DESTDIR)/$(INSTALLDIR)
-+	$(INSTALLER) showstat $(DESTDIR)/$(INSTALLDIR)
-+	$(INSTALLER) sagemf800.conf $(DESTDIR)/$(CONFIGDIR)/adiusbadsl.conf
-+	$(INSTALLER) CMVep.txt $(DESTDIR)/$(CONFIGDIR)
-+	$(INSTALLER) CMVei.txt $(DESTDIR)/$(CONFIGDIR)
- 
- uninstall:
--	rm -f $(INSTALLDIR)/adictrl
--	rm -f $(INSTALLDIR)/showstat
--	rm -f $(CONFIGDIR)/adiusbadsl.conf
--#	rm -f $(CONFIGDIR)/CMVep.txt
--#	rm -f $(CONFIGDIR)/CMVei.txt
-+	rm -f $(DESTDIR)/$(INSTALLDIR)/adictrl
-+	rm -f $(DESTDIR)/$(INSTALLDIR)/showstat
-+	rm -f $(DESTDIR)/$(CONFIGDIR)/adiusbadsl.conf
-+	rm -f $(DESTDIR)/$(CONFIGDIR)/CMVep.txt
-+	rm -f $(DESTDIR)/$(CONFIGDIR)/CMVei.txt
- 
- 
- 
-diff -uNr eagle-1.0.4.orig/pppoa/Makefile eagle-1.0.4/pppoa/Makefile
---- eagle-1.0.4.orig/pppoa/Makefile	Thu Apr 24 20:42:06 2003
-+++ eagle-1.0.4/pppoa/Makefile	Wed Jul  9 19:35:04 2003
-@@ -45,10 +45,10 @@
+--- eagle-usb/pppoa/Makefile.orig	2003-11-17 18:08:16.000000000 +0100
++++ eagle-usb/pppoa/Makefile	2003-11-17 18:08:28.000000000 +0100
+@@ -45,7 +45,7 @@
  	gcc $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o debug.o debug.c
  
  install: pppoa
--	$(INSTALLER) -m 775 -o root -g root pppoa /usr/sbin
-+	$(INSTALLER) pppoa $(DESTDIR)/usr/sbin
+-	$(INSTALL) -m 775 -o root -g root pppoa $(SBINDIR)
++	$(INSTALL) pppoa $(SBINDIR)
  
  uninstall:
--	rm -f /usr/sbin/pppoa
-+	rm -f $(DESTDIR)/usr/sbin/pppoa
+ 	rm -f /usr/sbin/pppoa
+--- eagle-usb/driver/user/Makefile.orig	2003-11-17 18:05:56.000000000 +0100
++++ eagle-usb/driver/user/Makefile	2003-11-17 18:06:23.000000000 +0100
+@@ -17,9 +17,9 @@
+ install : eaglectrl eagle-usb.conf
+ 	mkdir -p $(INSTALLDIR)
+ 	mkdir -p $(EAGLEUSB_CONFDIR)
+-	$(INSTALL) -m 0755 -o root -g root eaglectrl $(INSTALLDIR)
+-	$(INSTALL) -m 0755 -o root -g root eaglestat $(INSTALLDIR)
+-	$(INSTALL) -m 0644 -o root -g root eagle-usb.conf $(EAGLEUSB_CONFDIR)/eagle-usb.conf
++	$(INSTALL) eaglectrl $(INSTALLDIR)
++	$(INSTALL) eaglestat $(INSTALLDIR)
++	$(INSTALL) eagle-usb.conf $(EAGLEUSB_CONFDIR)/eagle-usb.conf
+ #	$(INSTALL) -m 0755 -o root -g root CMVep.txt $(CONFIGDIR)/
+ #	$(INSTALL) -m 0755 -o root -g root CMVei.txt $(CONFIGDIR)/
  
- clean:
- 	rm -f *.o pppoa 
-diff -uNr eagle-1.0.4.orig/scripts/Makefile eagle-1.0.4/scripts/Makefile
---- eagle-1.0.4.orig/scripts/Makefile	Wed Jun 18 23:58:02 2003
-+++ eagle-1.0.4/scripts/Makefile	Wed Jul  9 19:44:40 2003
-@@ -14,29 +14,29 @@
- 	./makescripts
+--- eagle-usb/driver/firmware/Makefile.orig	2003-11-17 18:03:24.000000000 +0100
++++ eagle-usb/driver/firmware/Makefile	2003-11-17 18:03:37.000000000 +0100
+@@ -36,7 +36,7 @@
  
- install: userscripts
--	mkdir -p $(HOTPLUGDIR)/usb
-+	mkdir -p $(DESTDIR)/$(HOTPLUGDIR)/usb
- 	@if [ -f pap-secrets ]; then \
--		$(INSTALLER) -c -m 0600 -o root -g root pap-secrets $(PPPDIR) ; \
-+		$(INSTALLER) -c pap-secrets $(DESTDIR)/$(PPPDIR) ; \
- 	fi
- 	@if [ -f chap-secrets ]; then \
--		$(INSTALLER) -c -m 0600 -o root -g root chap-secrets $(PPPDIR) ; \
-+		$(INSTALLER) -c chap-secrets $(DESTDIR)/$(PPPDIR) ; \
- 	fi
- 	@if [ -f options.adsl ]; then \
--		$(INSTALLER) -c -m 0644 -o root -g root options.adsl $(PPPDIR) ; \
-+		$(INSTALLER) -c options.adsl $(DESTDIR)/$(PPPDIR) ; \
- 	fi
--	$(INSTALLER) -c -m 0554 -o root -g root hotplug/adiusb* $(HOTPLUGDIR)/usb
-+	$(INSTALLER) -c hotplug/adiusb* $(DESTDIR)/$(HOTPLUGDIR)/usb
- 	@if [ -f usb.usermap ]; then \
--		$(INSTALLER) -c -m 0644 -o root -g root usb.usermap $(HOTPLUGDIR) ; \
-+		$(INSTALLER) -c usb.usermap $(DESTDIR)/$(HOTPLUGDIR) ; \
- 	else \
--		$(INSTALLER) -c -m 0644 -o root -g root usb.usermap.local $(HOTPLUGDIR) && \
-+		$(INSTALLER) -c usb.usermap.local $(DESTDIR)/$(HOTPLUGDIR) && \
- 		/usr/sbin/update-usb.usermap ; \
- 	fi
--	$(INSTALLER) -c -m 0554 -o root -g root adsl/* $(INSTALLDIR)
-+	$(INSTALLER) -c  adsl/* $(DESTDIR)/$(INSTALLDIR)
- 	rm -f options.adsl options.mire pap-secrets chap-secrets usb.usermap usb.usermap.local
+ install : dsp_code_pots.bin dsp_code_isdn.bin 
+ 	mkdir -p $(EAGLEUSB_BINDIR)
+-	$(INSTALL) -m 0664 -o root -g root $^ $(EAGLEUSB_BINDIR)
++	$(INSTALL) $^ $(EAGLEUSB_BINDIR)
  
  uninstall:
--	rm -f $(PPPDIR)/options.mire
--	rm -f $(HOTPLUGDIR)/usb/adiusb*
-+	rm -f $(DESTDIR)/$(PPPDIR)/options.mire
-+	rm -f $(DESTDIR)/$(HOTPLUGDIR)/usb/adiusb*
- 	./scriptUninst
- 
- clean:
---- eagle-1.0.4/scripts/makescripts~	Wed Jun 18 21:58:02 2003
-+++ eagle-1.0.4/scripts/makescripts	Wed Jul  9 18:20:05 2003
-@@ -28,12 +28,6 @@
- echo $GREETING
- echo
- 
--# Check we are root:
--if [ `id -ur` != 0 ] ; then
--	echo $ROOTMSG
--	echo
--	exit 1
--fi
- 
- echo -en $DEGROUPEMSG
- read REP
---- eagle-1.0.4/driver/Makefile.orig	2003-09-11 18:03:04.803605024 +0200
-+++ eagle-1.0.4/driver/Makefile	2003-09-11 18:03:54.224091968 +0200
-@@ -59,7 +59,7 @@
- CFLAGS = -DLINUX -D__KERNEL__ -DMODULE -I$(KERNELSRC)/include \
- 	 '-DADIDRIVERVERSION="$(VERSION)"' -Wall \
-           -Wstrict-prototypes -fomit-frame-pointer \
--	  -fno-strict-aliasing -pipe 
-+	  -fno-strict-aliasing -pipe $(NEWFLAGS)
- 
- ifneq ($(MACHINE),ppc)
- CFLAGS += -mpreferred-stack-boundary=2
-
---- eagle-1.0.4/driver/Makefile	2003-09-18 14:42:54.135248496 +0200
-+++ eagle-1.0.4.zmian/driver/Makefile	2003-09-18 14:25:29.679029976 +0200
-@@ -83,8 +83,9 @@
- CFLAGS  += -O2
- endif
- 
--OBJS = AdiUsbAdslDriver.o \
--       Boot.o  \
-+EXTRA_CFLAGS=$(CFLAGS)
-+
-+module-objs := Boot.o  \
-        Util.o  \
-        Pipes.o \
-        Me.o    \
-@@ -96,11 +97,14 @@
-        Sar.o   \
-        Crc.o   \
-        Oam.o  
-+obj-m += AdiUsbAdslDriver.o
- 
- #---------------------------------------------------------------------------
- # Targets
- #---------------------------------------------------------------------------
- 
-+KBUILD_PARAMS := -C $(KERNELSRC) SUBDIRS=`pwd`
-+
- all: driver binaryfirmware adiuser
- 
- install: driver installfirmware installuser
-@@ -134,9 +138,13 @@
- installfirmware : binaryfirmware
- 	$(MAKE) -C $(FIRMWARE) install
- 
--$(MODULE).o: $(OBJS)
--	$(LD) -r -o $(MODULE).o $(OBJS)
--
-+$(MODULE).o: 
-+	$(MAKE) $(KBUILD_PARAMS) modules;
-+	if ! [ -f AdiUsbAdslDriver.ko ]; then \
-+	echo "AdiUsbAdslDriver.ko failed to build!"; \
-+	exit 1; \
-+	fi		    
-+	
- checkdep:
- 	@if [ ! -f .depend ]; then make dep ; exit 0; fi
- 
---- eagle-1.0.4/driver/user/Makefile.orig	2003-09-27 12:16:40.085692624 +0200
-+++ eagle-1.0.4/driver/user/Makefile	2003-09-27 12:17:50.535982552 +0200
-@@ -4,7 +4,7 @@
- # Makefile for adictrl
- #
- 
--CFLAGS=-O2 -pipe -Wall -pedantic -DLINUX -g
-+CFLAGS=-O2 -I$(KERNELSRC)/include -I../../kern-fixed  -DLINUX -Wall 
- INSTALLDIR=/usr/sbin
- CONFIGDIR=/etc/analog
- INSTALLER = $(shell which install)
+ 	rm -f $(EAGLEUSB_BINDIR)/dsp_code_pots.bin $(EAGLEUSB_BINDIR)/dsp_code_isdn.bin
