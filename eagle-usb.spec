@@ -15,9 +15,9 @@ Release:	0.%{_snap}.1
 License:	GPL
 Group:		Base/Kernel
 #Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
-Source0:	http://ep09.pld-linux.org/~djurban/pld/%{name}-usb-%{_snap}.tar.bz2
+Source0:	http://ep09.pld-linux.org/~djurban/pld/%{name}-%{_snap}.tar.bz2
 # Source0-md5:	2d15ce31e185042b4971733b8b345a88	
-Patch0:		%{name}-Makefile.patch
+Patch0:		eagle-Makefile.patch
 URL:		http://fast800.tuxfamily.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -68,7 +68,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 800...).
 
 %prep
-%setup -q -n eagle-usb
+%setup -q -n %{name}
 %patch0 -p1
 
 %build
