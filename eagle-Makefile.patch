@@ -123,3 +123,18 @@ diff -uNr eagle-1.0.4.orig/scripts/Makefile eagle-1.0.4/scripts/Makefile
  	./scriptUninst
  
  clean:
+--- eagle-1.0.4/scripts/makescripts~	Wed Jun 18 21:58:02 2003
++++ eagle-1.0.4/scripts/makescripts	Wed Jul  9 18:20:05 2003
+@@ -28,12 +28,6 @@
+ echo $GREETING
+ echo
+ 
+-# Check we are root:
+-if [ `id -ur` != 0 ] ; then
+-	echo $ROOTMSG
+-	echo
+-	exit 1
+-fi
+ 
+ echo -en $DEGROUPEMSG
+ read REP
