@@ -18,6 +18,7 @@ Source0: 	http://dl.sourceforge.net/sourceforge/eagle-usb/%{name}-%{version}.tar
 # Source0-md5:	d2d94f396132e34417fa1b26bcde7287
 Patch0:		eagle-Makefile.patch
 Patch1:		eagle-usb-ppc.patch
+Patch2:		eagle-usb-2.6.6.patch
 URL:		http://fast800.tuxfamily.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -72,6 +73,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %setup -q 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__aclocal} -I .
