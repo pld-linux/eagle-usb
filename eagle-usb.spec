@@ -31,7 +31,6 @@ BuildRequires:	automake
 BuildRequires:	rpmbuild(macros) >= 1.153
 %endif
 Requires:	ppp >= 2.4.1
-Requires:	hotplug
 Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}
 Conflicts:	eagle-usb24
 Obsoletes:	eagle-utils
