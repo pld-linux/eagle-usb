@@ -20,7 +20,7 @@ URL:		http://fast800.tuxfamily.org/
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 Requires(post,postun):	/sbin/depmod
-Requires(post,postun):	/sbin/update-usb.usermap
+#Requires(post,postun):	/sbin/update-usb.usermap
 Requires:	ppp >= 2.4.1
 #Requires:	hotplug
 %{!?_without_dist_kernel:Requires:	kernel-usb-%{_orig_name} = %{version}-%{_rel}@%{_kernel_ver_str}}
