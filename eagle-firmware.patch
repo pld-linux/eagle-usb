@@ -1,0 +1,26 @@
+--- eagle-1.0.4/driver/user/adictrl.c~	2003-06-03 22:40:57.000000000 +0000
++++ eagle-1.0.4/driver/user/adictrl.c	2003-07-15 19:49:44.000000000 +0000
+@@ -54,8 +54,8 @@
+ 
+ #define NB_SUPPORTED_PRODS  (sizeof(supported_products)/sizeof(supported_products[0]))
+ 
+-#define DEFAULT_FIRMWAREFILE "/etc/analog/firmware.bin"
+-#define DEFAULT_DSPFILE	     "/etc/analog/DSPcode.bin"
++#define DEFAULT_FIRMWAREFILE "/usr/share/misc/firmware.bin"
++#define DEFAULT_DSPFILE	     "/usr/share/misc/DSPcode.bin"
+ #define DEFAULT_OPTIONSFILE  "/etc/analog/adiusbadsl.conf"
+ 
+ #if 0
+--- eagle-1.0.4/driver/firmware/Makefile~	2003-07-15 19:43:48.000000000 +0000
++++ eagle-1.0.4/driver/firmware/Makefile	2003-07-15 19:47:24.000000000 +0000
+@@ -33,8 +33,8 @@
+ 	gcc $(CFLAGS) builddsp.c -o buildDSP
+ 
+ install : firmware.bin DSPcode.bin
+-	mkdir -p $(DESTDIR)/$(CONFIGDIR)
+-	$(INSTALLER)  *.bin $(DESTDIR)/$(CONFIGDIR)
++	mkdir -p $(DESTDIR)/usr/share/misc
++	$(INSTALLER)  *.bin $(DESTDIR)/usr/share/misc
+ 
+ uninstall:
+ 	rm -f $(DESTDIR)/$(CONFIGDIR)/DSPcode.bin
