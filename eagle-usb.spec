@@ -3,18 +3,18 @@
 # _without_dist_kernel          without distribution kernel
 #
 
-%define		_snap	031117
+%define		_snap	031218
 %define		_orig_name	eagle
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle
-Version:	1.0.5
+Version:	1.9.0
 Release:	0.%{_snap}.1
 License:	GPL
 Group:		Base/Kernel
 #Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 Source0:	http://www.kernel.pl/~djurban/pld/%{name}-usb.tar.bz2
-# Source0-md5:	d0afb3de2e5e3c04b40809d623244bfb
+# Source0-md5:	bbf3d9e484643101b0349d3629958259	
 Patch0:		%{name}-Makefile.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
