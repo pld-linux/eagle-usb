@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# eagle	starts/stops internet connection provided by adsl usb modem
+#
+# chkconfig:    2345	09 91	
+#
+# description:	eagle starts/stops internet connection provided by adsl usb \
+# 		modem based on Analog Devices Inc. USB ADSL Modem chip - \
+#		f.e. sagem f@st 800
+#
+
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config - may override defaults
+[ -f /etc/sysconfig/eagle ] && . /etc/sysconfig/eagle
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network ]; then
+		# nls "ERROR: Networking is down. %s can't be run." eagle
+		msg_network_down eagle
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/eagle ]; then
+		#OTHER_PPP_IFS=`ifconfig | awk '/ppp[0-9]*/ {print $1}'
+	    	# show "Starting %s service" eagle
+		msg_starting eagle
+		/usr/sbin/startadsl
+		RETVAL=$?
+		busy
+		sleep 5 # wait for ip from provider
+		show `grep ifconfig 
+		if [ $RETVAL -eq 0 ]; then
+			touch /var/lock/subsys/eagle
+			ok
+		fi
+		
+	else
+		# show "%s service is already running." eagle
+		msg_already_running eagle
+		exit 1
+	fi
+        ;;
+  stop)
+        # show "Stopping %s service" eagle
+	if [ -f /var/lock/subsys/eagle ]; then
+		msg_stopping eagle
+		/usr/sbin/stopadsl
+		RETVAL=$?
+		if [ $RETVAL -eq 0 ]; then
+		    	rm -f /var/lock/subsys/eagle
+			ok
+	    	fi
+	else
+		# show "%s service is not running." eagle
+		msg_not_running eagle
+		exit 1
+	fi	
+        ;;
+  restart)
+        $0 stop
+	$0 start
+        ;;
+  reload)
+	if [ -f /var/lock/subsys/eagle ]; then
+		# show "Reload %s service" eagle
+		msg_reloading eagle
+		killproc eagle -HUP
+		RETVAL=$?
+	else
+		# show "%s service is not running." eagle
+		msg_not_running eagle
+		RETVAL=1
+	fi
+	;;
+  force-reload)
+  	# if program allows reloading without stopping
+	$0 reload
+
+	# or if it doesn't
+	$0 stop && $0 start
+	;;
+  status)
+	status eagle
+	RETVAL=$?
+        ;;
+  *)
+        # show "Usage: %s {start|stop|status|restart|reload|force-reload}" $0
+	msg_usage "$0 {start|stop|status|restart|reload|force-reload}"
+        exit 1
+esac
+
+exit $RETVAL
+
+# This must be last line !
+# vi:syntax=sh:tw=78:ts=8:sw=4
