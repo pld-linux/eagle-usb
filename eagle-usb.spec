@@ -2,6 +2,7 @@
 # Conditional build:
 # _without_dist_kernel          without distribution kernel
 #
+%define		_without_smp	1
 %define		_orig_name	fast800
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
@@ -13,11 +14,12 @@ License:	GPL
 Group:		Base/Kernel
 Source0:	http://fast800.tuxfamily.org/pub/IMG/gz/%{name}-%{version}.tar.gz
 # Source0-md5:	fc52cf1eff6ab9f20e9c2cb3e7e2f1e8
+Source1:	%{name}-fixed_headers.tar.bz2
+# Source1-md5:	d2fdf1fd3e651c1e4c856ff5af046c3f
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-firmware.patch
 Patch2:         %{name}-stupid.patch
 Patch3:         %{name}-port26.patch
-Patch4:         %{name}-fix_kern_headers.patch
 URL:		http://fast800.tuxfamily.org/
 %{!?_without_dist_kernel:BuildRequires:	kernel-headers }
 BuildRequires:	%{kgcc_package}
@@ -68,20 +70,13 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 800...).
 
 %prep
-%setup -q
+%setup -q -a1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 
 cd driver/
 %patch3 -p0 -b .niedakh
-
-cd ../
-mkdir kern-fixed
-cd kern-fixed
-cp %{_includedir}/linux/usb.h ./
-cp %{_includedir}/linux/usbdevice_fs.h ./
-%patch4 -p0 -b .niedakh
 cd ../
 
 %build
