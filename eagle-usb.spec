@@ -10,8 +10,6 @@
 %bcond_without	userspace	# don't build userspace tools
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		_update_usb /sbin/update-usb.usermap
-#
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
@@ -140,18 +138,20 @@ cd -
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{analog,hotplug,ppp} \
 	$RPM_BUILD_ROOT{%{_sbindir},%{_libdir}/hotplug/eagle}
 
-#install scripts/hotplug/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
+install utils/scripts/usb.usermap $RPM_BUILD_ROOT%{_libdir}/hotplug/eagle
 
 %{__make} -C driver/firmware install \
-	CONFIGDIR=$RPM_BUILD_ROOT/etc/analog \
-	DESTDIR=$RPM_BUILD_ROOT
+	INSTALL=install \
+	EU_DSP_DIR=$RPM_BUILD_ROOT%{_datadir}/misc
 
 %{__make} -C driver/user install \
-	INSTALLDIR=%{_sbindir} \
-	CONFIGDIR=%{_sysconfdir}/analog \
-	DESTDIR=$RPM_BUILD_ROOT
+	INSTALL=install \
+	SBINDIR=$RPM_BUILD_ROOT%{_sbindir} \
+	EU_SCRIPT_DIR=$RPM_BUILD_ROOT%{_sysconfdir}/analog
 
-install pppoa/pppoa $RPM_BUILD_ROOT%{_sbindir}
+install pppoa/pppoa \
+	$RPM_BUILD_ROOT%{_sbindir}
+
 echo 'n
 
 
@@ -207,11 +207,12 @@ fi
 %defattr(644,root,root,755)
 %doc README
 %dir %{_sysconfdir}/analog
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/adiusbadsl.conf
-%{_sysconfdir}/analog/CMV*
-%attr(755,root,root) %{_sysconfdir}/hotplug/usb/*
+#%%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/analog/adiusbadsl.conf
+#%%{_sysconfdir}/analog/CMV*
+%{_sysconfdir}/analog/eagle-usb.conf*
+#%%attr(755,root,root) %{_sysconfdir}/hotplug/usb/*
 %{_libdir}/hotplug/eagle
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
+#%%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/ppp/*.adsl
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
 %endif
