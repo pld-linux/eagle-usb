@@ -5,6 +5,7 @@
 
 %define		_snap	031218
 %define		_orig_name	eagle
+%define		no_install_post_compress_modules 1
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800...)
 Name:		eagle
