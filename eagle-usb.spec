@@ -21,7 +21,7 @@ Patch1:		eagle-firmware.patch
 Patch2:		%{name}-user2.6.patch
 URL:		http://fast800.tuxfamily.org/
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-headers}
+%{?with_dist_kernel:BuildRequires:	kernel-headers < 2.5}
 BuildRequires:	%{kgcc_package}
 BuildRequires:	rpmbuild(macros) >= 1.118
 %endif
