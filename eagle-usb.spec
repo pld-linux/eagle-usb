@@ -183,8 +183,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README
 %dir %{_sysconfdir}/eagle-usb
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/eagle-usb.conf
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/eagle-usb/*.txt
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/eagle-usb/eagle-usb.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/eagle-usb/*.txt
 %attr(755,root,root) %{_sbindir}/*
 %{_datadir}/misc/*.bin
 %endif
