@@ -1,0 +1,21 @@
+diff -Nurb eagle-usb-2.2.0.bef/configure.in eagle-usb-2.2.0.new/configure.in
+--- eagle-usb-2.2.0.bef/configure.in	2005-01-16 22:55:16.000000000 +0100
++++ eagle-usb-2.2.0.new/configure.in	2005-05-24 22:55:31.000000000 +0200
+@@ -400,7 +400,7 @@
+ if test "$BOOT_METHOD" = "none" ; then
+ 	# Fedora, Redhat, Suse, Mdk>10 (network service on Mdk10.1 may be too restrictive)
+ 	# as "-v" param is not always recognized (eg: SuSE), "--list" is more suitable
+-	chkconfig --list &>/dev/null && BOOT_METHOD="chkconfig"
++	chkconfig --list > /dev/null 2>&1 && BOOT_METHOD="chkconfig"
+ fi
+ if test "$BOOT_METHOD" = "none" ; then
+ 	# Debian
+@@ -525,7 +525,7 @@
+ 		else
+ 			echo -e ${KERNEL_SRC_MISSING_MSG}
+ 		fi
+-		exit 1
++		#exit 1
+ 	fi
+ 	if test "${KERNELVER}" != "${CUR_KERNELVER}" ; then
+ 		echo -e ${KERNEL_SRC_DIFF_MSG}
