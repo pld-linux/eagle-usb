@@ -24,6 +24,7 @@ Patch2:		%{name}-vpivci-info.patch
 Patch3:		%{name}-opt.patch
 Patch4:		%{name}-signal.patch
 Patch5:		%{name}-usb_kill_urb.patch
+Patch6:		%{name}-kernel_sources_checking_hack.patch
 URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -89,6 +90,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc
@@ -124,8 +126,7 @@ cd -
 %{__aclocal} -I .
 %{__autoconf}
 %configure \
-	--with-dsp-dir=%{_datadir}/misc \
-	--with-kernel-src=%{_kernelsrcdir}
+	--with-dsp-dir=%{_datadir}/misc 
 %{__make} -C driver/firmware \
 	OPT="%{rpmcflags}"
 %{__make} -C driver/user \
