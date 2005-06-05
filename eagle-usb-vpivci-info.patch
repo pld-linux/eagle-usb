@@ -1,10 +1,9 @@
-diff -urN eagle-usb-2.0.0.org/driver/user/eagle-usb.conf eagle-usb-2.0.0/driver/user/eagle-usb.conf
---- eagle-usb-2.0.0.org/driver/user/eagle-usb.conf	2004-10-10 15:35:56.000000000 +0200
-+++ eagle-usb-2.0.0/driver/user/eagle-usb.conf	2004-11-25 22:59:42.086428109 +0100
-@@ -47,7 +47,30 @@
- #OPTN16=80818040
- 
- # VPI / VCI are in hexa (8, 23) is 8,35 in decimal
+--- eagle-usb-2.3.2/driver/user/eagle-usb.conf	2005-03-27 14:45:25.000000000 +0000
++++ eagle-usb-2.3.2.new/driver/user/eagle-usb.conf	2005-06-05 21:40:29.830447256 +0000
+@@ -5,7 +5,30 @@
+ #
+ # VPI / VCI are in hexa 
+ # for example, (8, 23) is (8,35) in decimal
 -VPI=00000008
 +#
 +# Country     Network        Encapsulation           VPI VCI (decimal values)
@@ -30,6 +29,6 @@ diff -urN eagle-usb-2.0.0.org/driver/user/eagle-usb.conf eagle-usb-2.0.0/driver/
 +#              you have to convert them from decimal to hex.
 +#
 +VPI=00000000
- VCI=00000023
+ VCI=00000024
  
  #The following values are valid for encapsulation :
