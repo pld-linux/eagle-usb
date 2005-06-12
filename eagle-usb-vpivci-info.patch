@@ -1,10 +1,11 @@
 --- eagle-usb-2.3.2/driver/user/eagle-usb.conf	2005-03-27 14:45:25.000000000 +0000
-+++ eagle-usb-2.3.2.new/driver/user/eagle-usb.conf	2005-06-05 21:40:29.830447256 +0000
-@@ -5,7 +5,30 @@
++++ eagle-usb-2.3.2.new/driver/user/eagle-usb.conf	2005-06-12 09:27:55.060376872 +0000
+@@ -5,8 +5,31 @@
  #
  # VPI / VCI are in hexa 
  # for example, (8, 23) is (8,35) in decimal
 -VPI=00000008
+-VCI=00000024
 +#
 +# Country     Network        Encapsulation           VPI VCI (decimal values)
 +#
@@ -29,6 +30,7 @@
 +#              you have to convert them from decimal to hex.
 +#
 +VPI=00000000
- VCI=00000024
++VCI=00000023
  
  #The following values are valid for encapsulation :
+ #MPOA_MODE_BRIDGED_ETH_LLC ----> 1 RFC2516 Bridged PPPoE LLC
