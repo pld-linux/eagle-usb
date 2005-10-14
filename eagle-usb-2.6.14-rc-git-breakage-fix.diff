@@ -1,0 +1,31 @@
+diff -pruN a/driver/Pipes.c b/driver/Pipes.c
+--- a/driver/Pipes.c	2005-10-08 11:48:12.000000000 +0200
++++ b/driver/Pipes.c	2005-10-08 11:48:27.000000000 +0200
+@@ -919,7 +919,7 @@ static USB_COMPLETION_PROTO (eu_write_co
+              *  -EINVAL.
+             */
+             urb->status = 0;
+-            urb->transfer_flags &= ~URB_ASYNC_UNLINK;
++//            urb->transfer_flags &= ~URB_ASYNC_UNLINK;
+ 	}
+ 	else
+ 	{
+diff -pruN a/driver/eu_eth.c b/driver/eu_eth.c
+--- a/driver/eu_eth.c	2005-10-08 11:48:55.000000000 +0200
++++ b/driver/eu_eth.c	2005-10-08 11:47:45.000000000 +0200
+@@ -495,11 +495,11 @@ static void eu_eth_tx_timeout ( struct n
+      * netif_wakequeue:
+     */
+     
+-    ins->urb_write->transfer_flags |= URB_ASYNC_UNLINK;
+-    usb_unlink_urb(ins->urb_write);
++//    ins->urb_write->transfer_flags |= URB_ASYNC_UNLINK;
++    usb_kill_urb(ins->urb_write);
+ 
+-    ins->urb_oam_write->transfer_flags |= URB_ASYNC_UNLINK;
+-    usb_unlink_urb(ins->urb_oam_write);
++//    ins->urb_oam_write->transfer_flags |= URB_ASYNC_UNLINK;
++    usb_kill_urb(ins->urb_oam_write);
+     
+     /* We must reset the transaction time to keep the watchdog quiet: */
+     dev->trans_start = jiffies;
