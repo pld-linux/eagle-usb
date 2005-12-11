@@ -119,7 +119,8 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 		%{?with_verbose:V=1}
 	%{__make} -C %{_kernelsrcdir} modules \
 		M=$PWD O=$PWD \
-		%{?with_verbose:V=1}
+		%{?with_verbose:V=1} \
+		USE_CMVS=1
 	mv eagle-usb{,-$cfg}.ko
 done
 cd -
