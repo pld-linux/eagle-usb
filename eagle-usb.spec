@@ -141,6 +141,7 @@ cd -
 %{__aclocal} -I .
 %{__autoconf}
 %configure \
+	%{!?with_cmvs:--disable-cmvs} \
 	--with-dsp-dir=%{_datadir}/misc 
 %{__make} -C driver/firmware \
 	OPT="%{rpmcflags}"
