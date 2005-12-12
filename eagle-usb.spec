@@ -10,6 +10,7 @@
 %bcond_with	verbose		# verbose build (V=1)
 #
 %ifarch sparc
+# no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
 %undefine	with_kernel
 %endif
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
