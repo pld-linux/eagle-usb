@@ -7,6 +7,7 @@
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace tools
+%bcond_without	cmvs
 %bcond_with	verbose		# verbose build (V=1)
 #
 %ifarch sparc
@@ -130,7 +131,7 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	%{__make} -C %{_kernelsrcdir} modules \
 		M=$PWD O=$PWD \
 		%{?with_verbose:V=1} \
-		USE_CMVS=1
+		USE_CMVS=%{?with_cmvs:1}%{!?with_cmvs:0}
 	mv eagle-usb{,-$cfg}.ko
 done
 cd -
