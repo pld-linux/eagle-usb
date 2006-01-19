@@ -1,6 +1,7 @@
---- eagle-usb-2.3.2/driver/user/eagle-usb.conf	2005-03-27 14:45:25.000000000 +0000
-+++ eagle-usb-2.3.2.new/driver/user/eagle-usb.conf	2005-06-12 09:27:55.060376872 +0000
-@@ -5,8 +5,31 @@
+diff -uNr eagle-usb-2.3.2.orig/driver/user/eagle-usb.conf eagle-usb-2.3.2/driver/user/eagle-usb.conf
+--- eagle-usb-2.3.2.orig/driver/user/eagle-usb.conf	2005-03-27 16:45:25.000000000 +0200
++++ eagle-usb-2.3.2/driver/user/eagle-usb.conf	2006-01-19 20:55:04.766007000 +0100
+@@ -5,8 +5,32 @@
  #
  # VPI / VCI are in hexa 
  # for example, (8, 23) is (8,35) in decimal
@@ -29,8 +30,27 @@
 +# VPI/VCI -    hex. values - if you use values from table above,
 +#              you have to convert them from decimal to hex.
 +#
++# this is for tpnet neostrada
 +VPI=00000000
 +VCI=00000023
  
  #The following values are valid for encapsulation :
  #MPOA_MODE_BRIDGED_ETH_LLC ----> 1 RFC2516 Bridged PPPoE LLC
+@@ -15,9 +39,16 @@
+ #MPOA_MODE_ROUTED_IP_VC    ----> 4 RFC1483/2684 Routed IP (IPoA) VCmux
+ #MPOA_MODE_PPPOA_LLC       ----> 5 RFC2364 PPPoA LLC
+ #MPOA_MODE_PPPOA_VC        ----> 6 RFC2364 PPPoA VCmux
+-Encapsulation=00000004
++#Encapsulation=00000004
++# for TPNET neostrada
++Encapsulation=00000006
+ 
+ # A for CMV use, 1 otherwise
+ Linetype=0000000A
+ RatePollFreq=00000009
+ </eaglectrl>
++# for TPNET neostrada
++STATIC_IP=none
++ISP=PL01
++LANG=
++ASYNCHRONOUS_START=1
