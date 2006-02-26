@@ -134,12 +134,16 @@ cd -
 %{__autoconf}
 %configure \
 	%{!?with_cmvs:--disable-cmvs} \
-	--with-dsp-dir=%{_datadir}/misc 
+	--with-dsp-dir=%{_datadir}/misc
+
 %{__make} -C driver/firmware \
+	CC="%{__cc}" \
 	OPT="%{rpmcflags}"
 %{__make} -C driver/user \
+	CC="%{__cc}" \
 	OPT="%{rpmcflags}"
 %{__make} -C pppoa \
+	CC="%{__cc}" \
 	OPT="%{rpmcflags}"
 %endif
 
