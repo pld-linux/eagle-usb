@@ -17,13 +17,13 @@
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
-Version:	2.3.2
-%define		_rel	8
+Version:	2.3.3
+%define		_rel	0.1
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
 Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{name}-%{version}.tar.bz2
-# Source0-md5:	91727db818e5170b2d78a99ee51c2d58
+# Source0-md5:	6c961a5022274aff870e49e2f0f922fc
 Patch1:		%{name}-eu_types.patch
 Patch2:		%{name}-vpivci-info.patch
 Patch3:		%{name}-opt.patch
