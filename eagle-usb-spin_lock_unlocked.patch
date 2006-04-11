@@ -1,0 +1,10 @@
+--- ./driver/eu_main.c.org	2005-09-11 10:38:55.000000000 +0000
++++ ./driver/eu_main.c	2006-04-10 19:35:13.000000000 +0000
+@@ -107,6 +107,7 @@
+ #define EU_INT_LOADSWAPPAGE   0x01
+ #define EU_INT_INCOMINGCMV    0x02
+ 
++#define SPIN_LOCK_UNLOCKED (spinlock_t) { }
+ 
+ /* ----------------------- Private Function Declarations ------------------------ */
+ 
