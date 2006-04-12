@@ -14,11 +14,11 @@
 # no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
 %undefine	with_kernel
 %endif
+%define		_rel	1
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
 Version:	2.3.3
-%define		_rel	1
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
@@ -36,15 +36,15 @@ URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.7}
+%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.153
 %endif
-BuildRequires:	net-tools
 BuildRequires:	SysVinit
-Requires:	ppp >= 2.4.1
+BuildRequires:	net-tools
 Requires:	kernel-usb-eagle = %{version}-%{_rel}@%{_kernel_ver_str}
-Conflicts:	eagle-usb24
+Requires:	ppp >= 2.4.1
 Obsoletes:	eagle-utils
+Conflicts:	eagle-usb24
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -112,21 +112,21 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
 		exit 1
 	fi
-        install -d o/include/linux
-        ln -sf %{_kernelsrcdir}/config-$cfg o/.config
-        ln -sf %{_kernelsrcdir}/Module.symvers-$cfg o/Module.symvers
-        ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h o/include/linux/autoconf.h
-        %{__make} -C %{_kernelsrcdir} O=$PWD/o prepare scripts
+	install -d o/include/linux
+	ln -sf %{_kernelsrcdir}/config-$cfg o/.config
+	ln -sf %{_kernelsrcdir}/Module.symvers-$cfg o/Module.symvers
+	ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h o/include/linux/autoconf.h
+	%{__make} -C %{_kernelsrcdir} O=$PWD/o prepare scripts
 
-	%{__make} -C %{_kernelsrcdir} clean \
-                RCS_FIND_IGNORE="-name '*.ko' -o" \
-                M=$PWD O=$PWD/o \
-                %{?with_verbose:V=1}
-	%{__make} -C %{_kernelsrcdir} modules \
-                RCS_FIND_IGNORE="-name '*.ko' -o" \
-                M=$PWD O=$PWD/o \
-		%{?with_verbose:V=1} \
-		USE_CMVS=%{?with_cmvs:1}%{!?with_cmvs:0}
+%{__make} -C %{_kernelsrcdir} clean \
+		RCS_FIND_IGNORE="-name '*.ko' -o" \
+		M=$PWD O=$PWD/o \
+		%{?with_verbose:V=1}
+%{__make} -C %{_kernelsrcdir} modules \
+		RCS_FIND_IGNORE="-name '*.ko' -o" \
+		M=$PWD O=$PWD/o \
+	%{?with_verbose:V=1} \
+	USE_CMVS=%{?with_cmvs:1}%{!?with_cmvs:0}
 	mv eagle-usb{,-$cfg}.ko
 done
 cd -
