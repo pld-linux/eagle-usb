@@ -32,6 +32,7 @@ Patch5:		%{name}-usb_kill_urb.patch
 Patch6:		%{name}-kernel_sources_checking_hack.patch
 # Workaround for obsolete kernel API. To be removed...
 Patch7:		%{name}-spin_lock_unlocked.patch
+Patch8:		%{name}-kill_owner.patch
 URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -99,6 +100,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %ifnarch %{ix86}
 # invalid not only for ppc

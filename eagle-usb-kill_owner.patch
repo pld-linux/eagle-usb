@@ -1,0 +1,12 @@
+diff -urp eagle-usb-2.3.3.org/driver/eu_main.c eagle-usb-2.3.3/driver/eu_main.c
+--- eagle-usb-2.3.3.org/driver/eu_main.c	2006-05-09 20:17:34.000000000 +0200
++++ eagle-usb-2.3.3/driver/eu_main.c	2006-05-09 20:29:24.000000000 +0200
+@@ -173,7 +173,7 @@ static const struct usb_device_id eu_ids
+  */
+ static struct usb_driver eu_driver =
+ {
+-#if LINUX_VERSION_CODE > KERNEL_VERSION(2,4,19)
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,4,19) && LINUX_VERSION_CODE < KERNEL_VERSION(2,6,16)
+     .owner      = THIS_MODULE,
+ #endif    
+     .name       = "eagle-usb",
