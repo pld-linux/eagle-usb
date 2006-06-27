@@ -1,0 +1,14 @@
+--- eagle-usb-2.3.3/driver/eu_main.c~	2005-09-11 12:38:55.000000000 +0200
++++ eagle-usb-2.3.3/driver/eu_main.c	2006-06-27 19:26:53.000000000 +0200
+@@ -250,9 +250,9 @@
+ MODULE_DESCRIPTION ("Eagle USB ADSL Modem driver");
+ MODULE_DEVICE_TABLE (usb, eu_ids);
+ MODULE_LICENSE("GPL");
+-MODULE_PARM (if_name,"s");
++module_param (if_name, charp, NULL);
+ MODULE_PARM_DESC (if_name,"Exported ethernet interface name");
+-MODULE_PARM (module_dbg_mask,"i");
++module_param (module_dbg_mask, uint, 0);
+ MODULE_PARM_DESC (module_dbg_mask,"Module Debug mask");
+ 
+ EXPORT_NO_SYMBOLS;
