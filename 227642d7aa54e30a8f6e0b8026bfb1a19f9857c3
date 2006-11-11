@@ -1,0 +1,5 @@
+- %build/%install fixed.
+- eaglectrl's *_DIR fixed.
+- PPC fix stolen from -rLINUX_2_6.
+- cleanups.
+- release 0.5.
