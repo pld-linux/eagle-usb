@@ -39,7 +39,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
-BuildRequires:	rpmbuild(macros) >= 1.326
+BuildRequires:	rpmbuild(macros) >= 1.329
 %endif
 BuildRequires:	SysVinit
 BuildRequires:	net-tools
@@ -116,9 +116,8 @@ sed -i 's/-mpreferred-stack-boundary=2//' driver/Makefile
 
 %build
 %if %{with kernel}
-cd driver
-%build_kernel_modules -m eagle-usb USE_CMVS=%{?with_cmvs:1}%{!?with_cmvs:0}
-cd -
+%build_kernel_modules -C driver -m eagle-usb \
+	USE_CMVS=%{?with_cmvs:1}%{!?with_cmvs:0}
 %endif
 
 %if %{with userspace}
@@ -143,9 +142,7 @@ cd -
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with kernel}
-cd driver
-%install_kernel_modules -m eagle-usb -d kernel/drivers/usb/net
-cd -
+%install_kernel_modules -m driver/eagle-usb -d kernel/drivers/usb/net
 %endif
 
 %if %{with userspace}
