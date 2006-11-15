@@ -43,7 +43,6 @@ BuildRequires:	rpmbuild(macros) >= 1.330
 %endif
 BuildRequires:	SysVinit
 BuildRequires:	net-tools
-Requires:	kernel-usb(eagle) = %{version}-%{_rel}
 Requires:	ppp >= 2.4.1
 Obsoletes:	eagle-utils
 Conflicts:	eagle-usb24
