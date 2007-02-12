@@ -22,7 +22,7 @@
 %endif
 %define		_rel	4
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
-Summary(pl):	Sterownik dla Linuksa do modem體 Eagle 8051 Analog (sagem f@st 800/840/908/...)
+Summary(pl.UTF-8):   Sterownik dla Linuksa do modem贸w Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
 Version:	2.3.3
 Release:	%{_rel}
@@ -58,13 +58,13 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...)
 modems.
 
-%description -l pl
-Sterownik dla Linuksa do modem體 Eagle 8051 Analog (sagem f@st
+%description -l pl.UTF-8
+Sterownik dla Linuksa do modem贸w Eagle 8051 Analog (sagem f@st
 800/840/908/...).
 
 %package -n kernel%{_alt_kernel}-usb-eagle
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
-Summary(pl):	Sterownik dla Linuksa do modem體 Eagle 8051 Analog (sagem f@st 800/840/908/...)
+Summary(pl.UTF-8):   Sterownik dla Linuksa do modem贸w Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_up}
@@ -78,13 +78,13 @@ Obsoletes:	kernel-usb-fast800
 Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...)
 modems.
 
-%description -n kernel%{_alt_kernel}-usb-eagle -l pl
-Sterownik dla Linuksa do modem體 Eagle 8051 Analog (sagem f@st
+%description -n kernel%{_alt_kernel}-usb-eagle -l pl.UTF-8
+Sterownik dla Linuksa do modem贸w Eagle 8051 Analog (sagem f@st
 800/840/908/...).
 
 %package -n kernel%{_alt_kernel}-smp-usb-eagle
 Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
-Summary(pl):	Sterownik dla Linuksa SMP do modem體 Eagle 8051 Analog (sagem f@st 800/840/908/...)
+Summary(pl.UTF-8):   Sterownik dla Linuksa SMP do modem贸w Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
@@ -98,8 +98,8 @@ Obsoletes:	kernel-smp-usb-fast800
 Linux SMP driver for the Eagle 8051 Analog (sagem f@st
 800/840/908/...) modems.
 
-%description -n kernel%{_alt_kernel}-smp-usb-eagle -l pl
-Sterownik dla Linuksa SMP do modem體 Eagle 8051 Analog (sagem f@st
+%description -n kernel%{_alt_kernel}-smp-usb-eagle -l pl.UTF-8
+Sterownik dla Linuksa SMP do modem贸w Eagle 8051 Analog (sagem f@st
 800/840/908/...).
 
 %prep
