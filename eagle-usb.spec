@@ -6,6 +6,7 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	smp		# don't build SMP module
+%bcond_without	up		# don't build UP module
 %bcond_without	userspace	# don't build userspace tools
 %bcond_without	cmvs
 %bcond_with	verbose		# verbose build (V=1)
@@ -19,7 +20,7 @@
 # no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
 %undefine	with_kernel
 %endif
-%define		_rel	4
+%define		_rel	5
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
@@ -190,9 +191,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with kernel}
+%if %{with up} || %{without dist_kernel}
 %files -n kernel%{_alt_kernel}-usb-eagle
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/*.ko*
+%endif
 
 %if %{with smp} && %{with dist_kernel}
 %files -n kernel%{_alt_kernel}-smp-usb-eagle
