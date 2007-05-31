@@ -5,8 +5,6 @@
 # Conditional build:
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	kernel		# don't build kernel modules
-%bcond_without	smp		# don't build SMP module
-%bcond_without	up		# don't build UP module
 %bcond_without	userspace	# don't build userspace tools
 %bcond_without	cmvs
 %bcond_with	verbose		# verbose build (V=1)
@@ -44,8 +42,8 @@ URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
-BuildRequires:	rpmbuild(macros) >= 1.330
+%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2}
+BuildRequires:	rpmbuild(macros) >= 1.379
 %endif
 BuildRequires:	SysVinit
 BuildRequires:	net-tools
@@ -67,7 +65,7 @@ Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) mod
 Summary(pl.UTF-8):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_up}
+%{?with_dist_kernel:%requires_releq_kernel}
 Requires(post,postun):	/sbin/depmod
 Provides:	kernel-usb(eagle) = %{version}-%{_rel}
 %if "%{_alt_kernel}" == "%{_nil}"
@@ -80,26 +78,6 @@ modems.
 
 %description -n kernel%{_alt_kernel}-usb-eagle -l pl.UTF-8
 Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
-800/840/908/...).
-
-%package -n kernel%{_alt_kernel}-smp-usb-eagle
-Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
-Summary(pl.UTF-8):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
-Release:	%{_rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_smp}
-Requires(post,postun):	/sbin/depmod
-Provides:	kernel-usb(eagle) = %{version}-%{_rel}
-%if "%{_alt_kernel}" == "%{_nil}"
-Obsoletes:	kernel-smp-usb-fast800
-%endif
-
-%description -n kernel%{_alt_kernel}-smp-usb-eagle
-Linux SMP driver for the Eagle 8051 Analog (sagem f@st
-800/840/908/...) modems.
-
-%description -n kernel%{_alt_kernel}-smp-usb-eagle -l pl.UTF-8
-Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 800/840/908/...).
 
 %prep
@@ -173,12 +151,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n kernel%{_alt_kernel}-usb-eagle
 %depmod %{_kernel_ver}
 
-%post -n kernel%{_alt_kernel}-smp-usb-eagle
-%depmod %{_kernel_ver}smp
-
-%postun -n kernel%{_alt_kernel}-smp-usb-eagle
-%depmod %{_kernel_ver}smp
-
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
@@ -191,15 +163,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with kernel}
-%if %{with up} || %{without dist_kernel}
 %files -n kernel%{_alt_kernel}-usb-eagle
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/drivers/usb/net/*.ko*
-%endif
-
-%if %{with smp} && %{with dist_kernel}
-%files -n kernel%{_alt_kernel}-smp-usb-eagle
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}smp/kernel/drivers/usb/net/*.ko*
-%endif
 %endif
