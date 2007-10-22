@@ -12,14 +12,19 @@
 %bcond_with	verbose		# verbose build (V=1)
 %bcond_with	grsec_kernel	# build for kernel-grsecurity
 #
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
-%endif
-#
 %ifarch sparc
 # no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
 %undefine	with_kernel
 %endif
+#
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
+#
+%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
+%define	alt_kernel	grsecurity
+%endif
+#
 %define		_rel	55
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
