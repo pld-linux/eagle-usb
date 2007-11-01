@@ -27,7 +27,7 @@
 %undefine	with_userspace
 %endif
 
-%define		_rel	55
+%define		_rel	56
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
