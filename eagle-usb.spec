@@ -28,6 +28,7 @@
 %endif
 
 %define		_rel	56
+%define		pname	eagle-usb
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		eagle-usb
@@ -35,18 +36,18 @@ Version:	2.3.3
 Release:	%{_rel}
 License:	GPL v2
 Group:		Base/Kernel
-Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{name}-%{version}.tar.bz2
+Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{pname}-%{version}.tar.bz2
 # Source0-md5:	6c961a5022274aff870e49e2f0f922fc
-Patch1:		%{name}-eu_types.patch
-Patch2:		%{name}-vpivci-info.patch
-Patch3:		%{name}-opt.patch
-Patch4:		%{name}-signal.patch
-Patch5:		%{name}-usb_kill_urb.patch
-Patch6:		%{name}-kernel_sources_checking_hack.patch
+Patch1:		%{pname}-eu_types.patch
+Patch2:		%{pname}-vpivci-info.patch
+Patch3:		%{pname}-opt.patch
+Patch4:		%{pname}-signal.patch
+Patch5:		%{pname}-usb_kill_urb.patch
+Patch6:		%{pname}-kernel_sources_checking_hack.patch
 # Workaround for obsolete kernel API. To be removed...
-Patch7:		%{name}-spin_lock_unlocked.patch
-Patch8:		%{name}-kill_owner.patch
-Patch9:		%{name}-module_param.patch
+Patch7:		%{pname}-spin_lock_unlocked.patch
+Patch8:		%{pname}-kill_owner.patch
+Patch9:		%{pname}-module_param.patch
 URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
