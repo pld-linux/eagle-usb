@@ -60,6 +60,9 @@ BuildRequires:	net-tools
 Requires:	ppp >= 2.4.1
 Obsoletes:	eagle-utils
 Conflicts:	eagle-usb24
+%if %{without userspace}
+ExcludeArch:	sparc
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
