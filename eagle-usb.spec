@@ -12,11 +12,6 @@
 %bcond_with	verbose		# verbose build (V=1)
 %bcond_with	grsec_kernel	# build for kernel-grsecurity
 
-%ifarch sparc
-# no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
-%undefine	with_kernel
-%endif
-
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
@@ -25,6 +20,11 @@
 %endif
 %if "%{_alt_kernel}" != "%{nil}"
 %undefine	with_userspace
+%endif
+
+%ifarch sparc
+# no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
+%undefine	with_kernel
 %endif
 
 %define		_rel	60
