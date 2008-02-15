@@ -10,13 +10,9 @@
 %bcond_without	userspace	# don't build userspace tools
 %bcond_without	cmvs
 %bcond_with	verbose		# verbose build (V=1)
-%bcond_with	grsec_kernel	# build for kernel-grsecurity
 
 %if %{without kernel}
 %undefine	with_dist_kernel
-%endif
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
 %endif
 %if "%{_alt_kernel}" != "%{nil}"
 %undefine	with_userspace
@@ -27,13 +23,12 @@
 %undefine	with_kernel
 %endif
 
-%define		_rel	61
 %define		pname	eagle-usb
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
 Name:		%{pname}%{_alt_kernel}
 Version:	2.3.3
-Release:	%{_rel}
+Release:	62
 License:	GPL v2
 Group:		Base/Kernel
 Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{pname}-%{version}.tar.bz2
@@ -76,11 +71,9 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 %package -n kernel%{_alt_kernel}-usb-eagle
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
-Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_up}
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
-Provides:	kernel-usb(eagle) = %{version}-%{_rel}
 %if "%{_alt_kernel}" == "%{_nil}"
 Obsoletes:	kernel-usb-fast800
 %endif
@@ -96,11 +89,9 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 %package -n kernel%{_alt_kernel}-smp-usb-eagle
 Summary:	Linux SMP driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl):	Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
-Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_smp}
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}-smp(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
-Provides:	kernel-usb(eagle) = %{version}-%{_rel}
 %if "%{_alt_kernel}" == "%{_nil}"
 Obsoletes:	kernel-smp-usb-fast800
 %endif
