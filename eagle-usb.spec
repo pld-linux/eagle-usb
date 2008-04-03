@@ -8,36 +8,39 @@
 %bcond_without	userspace	# don't build userspace tools
 %bcond_without	cmvs
 %bcond_with	verbose		# verbose build (V=1)
-%bcond_with	grsec_kernel	# build for kernel-grsecurity
-#
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
+
+%if %{without kernel}
+%undefine	with_dist_kernel
 %endif
-#
+%if "%{_alt_kernel}" != "%{nil}"
+%undefine	with_userspace
+%endif
+
 %ifarch sparc
 # no USB in sparc(32) kernel; just build userspace to use with sparc64 kernel
 %undefine	with_kernel
 %endif
-%define		_rel	4
+%define		rel	4
+%define		pname	eagle-usb
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl.UTF-8):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
-Name:		eagle-usb
+Name:		%{pname}%{_alt_kernel}
 Version:	2.3.3
-Release:	%{_rel}
+Release:	%{rel}
 License:	GPL v2
 Group:		Base/Kernel
-Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{name}-%{version}.tar.bz2
+Source0:	http://download.gna.org/eagleusb/eagle-usb-2.3.0/%{pname}-%{version}.tar.bz2
 # Source0-md5:	6c961a5022274aff870e49e2f0f922fc
-Patch1:		%{name}-eu_types.patch
-Patch2:		%{name}-vpivci-info.patch
-Patch3:		%{name}-opt.patch
-Patch4:		%{name}-signal.patch
-Patch5:		%{name}-usb_kill_urb.patch
-Patch6:		%{name}-kernel_sources_checking_hack.patch
+Patch1:		%{pname}-eu_types.patch
+Patch2:		%{pname}-vpivci-info.patch
+Patch3:		%{pname}-opt.patch
+Patch4:		%{pname}-signal.patch
+Patch5:		%{pname}-usb_kill_urb.patch
+Patch6:		%{pname}-kernel_sources_checking_hack.patch
 # Workaround for obsolete kernel API. To be removed...
-Patch7:		%{name}-spin_lock_unlocked.patch
-Patch8:		%{name}-kill_owner.patch
-Patch9:		%{name}-module_param.patch
+Patch7:		%{pname}-spin_lock_unlocked.patch
+Patch8:		%{pname}-kill_owner.patch
+Patch9:		%{pname}-module_param.patch
 URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -50,6 +53,9 @@ BuildRequires:	net-tools
 Requires:	ppp >= 2.4.1
 Obsoletes:	eagle-utils
 Conflicts:	eagle-usb24
+%if %{without userspace}
+ExcludeArch:	sparc
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -63,11 +69,10 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 %package -n kernel%{_alt_kernel}-usb-eagle
 Summary:	Linux driver for the Eagle 8051 Analog (sagem f@st 800/840/908/...) modems
 Summary(pl.UTF-8):	Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st 800/840/908/...)
-Release:	%{_rel}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel}
 Requires(post,postun):	/sbin/depmod
-Provides:	kernel-usb(eagle) = %{version}-%{_rel}
 %if "%{_alt_kernel}" == "%{_nil}"
 Obsoletes:	kernel-usb-fast800
 %endif
@@ -81,7 +86,7 @@ Sterownik dla Linuksa do modemów Eagle 8051 Analog (sagem f@st
 800/840/908/...).
 
 %prep
-%setup -q
+%setup -q -n %{pname}-%{version}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
