@@ -43,6 +43,7 @@ Patch6:		%{pname}-kernel_sources_checking_hack.patch
 Patch7:		%{pname}-spin_lock_unlocked.patch
 Patch8:		%{pname}-kill_owner.patch
 Patch9:		%{pname}-module_param.patch
+Patch10:	%{pname}-bitops.patch
 URL:		http://gna.org/projects/eagleusb/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -115,6 +116,7 @@ Sterownik dla Linuksa SMP do modemów Eagle 8051 Analog (sagem f@st
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p0
 
 %ifnarch %{ix86}
 # invalid not only for ppc
