@@ -1,0 +1,11 @@
+--- driver/eu_types.h	2008-09-22 22:11:53.000000000 +0200
++++ driver/eu_types.h.new	2008-09-22 22:22:35.000000000 +0200
+@@ -26,7 +26,7 @@
+ #define __EU_TYPES_H__
+ 
+ #include <linux/if_ether.h>
+-#include <asm/bitops.h>
++#include <asm-generic/bitops.h>
+ #include <linux/types.h>
+ 
+ /**
