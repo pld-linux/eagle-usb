@@ -1,0 +1,2 @@
+- main package doesn't need %{_kernel_ver_str} in release
+- rel. 3
